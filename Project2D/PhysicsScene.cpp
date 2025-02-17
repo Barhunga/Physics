@@ -1,6 +1,7 @@
 #include "PhysicsScene.h"
 #include "Sphere.h"
 #include "Plane.h"
+#include "Box.h"
 
 PhysicsScene::~PhysicsScene()
 {
@@ -145,6 +146,45 @@ float PhysicsScene::getTotalEnergy()
 
 bool PhysicsScene::plane2Box(PhysicsObject* obj1, PhysicsObject* obj2)
 {
+	Plane* plane = dynamic_cast<Plane*>(obj1);
+	Box* box = dynamic_cast<Box*>(obj2);
+	//if we are successful then test for collision
+	if (box != nullptr && plane != nullptr)
+	{
+		int numContacts = 0;
+		glm::vec2 contact(0, 0);
+		float contactV = 0;
+		// get a representative point on the plane
+		glm::vec2 planeOrigin = plane->getNormal() * plane->getDistance();
+		// check all four corners to see if we've hit the plane
+		for (float x = -box->getExtents().x; x < box->getWidth(); x += box->getWidth())
+		{
+			for (float y = -box->getExtents().y; y < box->getHeight(); y += box->getHeight())
+			{
+				// get the position of the corner in world space
+				glm::vec2 p = box->getPosition() + x * box->getLocalX() + y * box->getLocalY();
+				float distFromPlane = glm::dot(p - planeOrigin, plane->getNormal());
+				// this is the total velocity of the point in world space
+				glm::vec2 displacement = x * box->getLocalX() + y * box->getLocalY();
+				glm::vec2 pointVelocity = box->getVelocity() + box->getAngularVelocity() * glm::vec2(-displacement.y, displacement.x);
+				// and this is the component of the point velocity into the plane
+				float velocityIntoPlane = glm::dot(pointVelocity, plane->getNormal());
+				// and moving further in, we need to resolve the collision
+				if (distFromPlane < 0 && velocityIntoPlane <= 0)
+				{
+					numContacts++;
+					contact += p;
+					contactV += velocityIntoPlane;
+				}
+			}
+		}
+		// we've had a hit - typically only two corners can contact
+		if (numContacts > 0)
+		{
+			plane->resolveCollision(box, contact / (float)numContacts);
+			return true;
+		}
+	}
 	return false;
 }
 

@@ -21,6 +21,7 @@ public:
     glm::vec2 getVelocity() { return m_velocity; }
     float getMass() { return m_mass; }
     float getMoment() { return m_moment; }
+    float getAngularVelocity() { return m_angularVelocity; }
 
     float getKineticEnergy();
     float getPotentialEnergy();

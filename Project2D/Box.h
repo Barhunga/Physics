@@ -14,6 +14,11 @@ public:
     virtual void draw() override;
     virtual void fixedUpdate(glm::vec2 gravity, float timeStep) override;
 
+    glm::vec2 getExtents() { return m_extents; }
+    float getWidth() { return m_extents.x * 2; }
+    float getHeight() { return m_extents.y * 2; }
+    glm::vec2 getLocalX() { return m_localX; }
+    glm::vec2 getLocalY() { return m_localY; }
     glm::vec4 getColour() { return m_colour; }
 
 protected:
