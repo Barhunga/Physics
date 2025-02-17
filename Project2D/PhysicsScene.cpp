@@ -141,8 +141,8 @@ float PhysicsScene::getTotalEnergy()
 
 bool PhysicsScene::plane2Box(PhysicsObject* obj1, PhysicsObject* obj2)
 {
-	Box* box = dynamic_cast<Box*>(obj1);
-	Plane* plane = dynamic_cast<Plane*>(obj2);
+	Plane* plane = dynamic_cast<Plane*>(obj1);
+	Box* box = dynamic_cast<Box*>(obj2);
 	//if we are successful then test for collision
 	if (box != nullptr && plane != nullptr)
 	{

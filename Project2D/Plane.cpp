@@ -43,5 +43,12 @@ void Plane::resolveCollision(RigidBody* actor2, glm::vec2 contact)
     float j = -(1 + elasticity) * velocityIntoPlane * mass0;
     glm::vec2 force = m_normal * j;
 
+    float kePre = actor2->getKineticEnergy();
+
     actor2->applyForce(force, contact - actor2->getPosition());
+
+    float kePost = actor2->getKineticEnergy();
+    float deltaKE = kePost - kePre;
+    if (deltaKE > kePost * 0.01f)
+        printf("Kinetic Energy discrepancy greater than 1%% detected!!");
 }
