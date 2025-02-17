@@ -30,8 +30,12 @@ bool Application2D::startup() {
 
 	Sphere* ball1 = new Sphere(glm::vec2(-54, 0), glm::vec2(20, 17), 4.0f, 4, glm::vec4(0, 1, 0, 1));
 	Sphere* ball2 = new Sphere(glm::vec2(58, 0), glm::vec2(-20, 15), 8.0f, 8, glm::vec4(0, 1, 0, 1));
+	Sphere* ball3 = new Sphere(glm::vec2(0, 0), glm::vec2(0, 0), 4.0f, 4, glm::vec4(0, 1, 0, 1));
+	Box* box1 = new Box(glm::vec2(-30, 10), glm::vec2(0, 0), 4.0f, 4, 4, glm::vec4(0, 1, 0, 1));
 	m_physicsScene->addActor(ball1);
 	m_physicsScene->addActor(ball2);
+	m_physicsScene->addActor(ball3);
+	m_physicsScene->addActor(box1);
 
 	Plane* plane1 = new Plane(glm::vec2(-1, 0), -85, glm::vec4(0,0,1,1));
 	Plane* plane2 = new Plane(glm::vec2(1, 0), -85, glm::vec4(0,0,1,1));

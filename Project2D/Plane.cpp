@@ -22,13 +22,25 @@ void Plane::resetPosition()
 
 void Plane::resolveCollision(RigidBody* actor2, glm::vec2 contact)
 {
+    // the position at which we'll apply the force relative to the object's COM
+    glm::vec2 localContact = contact - actor2->getPosition();
+    // the plane isn't moving, so the relative velocity is just actor2's velocity at the contact point
+    glm::vec2 vRel = actor2->getVelocity() + actor2->getAngularVelocity() * glm::vec2(-localContact.y, localContact.x);
+    float velocityIntoPlane = glm::dot(vRel, m_normal);
     // if the objects are already moving apart, we don't need to do anything
-    if (glm::dot(m_normal, actor2->getVelocity()) >= 0)
+    if (velocityIntoPlane >= 0)
         return;
 
     float elasticity = 1;
-    float j = glm::dot(-(1 + elasticity) * (actor2->getVelocity()), m_normal) /
-        (1 / actor2->getMass());
+
+    // this is the perpendicular distance we apply the force at relative to the COM, so Torque = F * r
+        float r = glm::dot(localContact, glm::vec2(m_normal.y, -m_normal.x));
+    // work out the "effective mass" - this is a combination of moment of
+    // inertia and mass, and tells us how much the contact point velocity
+    // will change with the force we're applying
+    float mass0 = 1.0f / (1.0f / actor2->getMass() + (r * r) / actor2->getMoment());
+
+    float j = -(1 + elasticity) * velocityIntoPlane * mass0;
     glm::vec2 force = m_normal * j;
 
     actor2->applyForce(force, contact - actor2->getPosition());

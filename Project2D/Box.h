@@ -6,7 +6,7 @@ class Box : public RigidBody
 public:
     Box(glm::vec2 position, glm::vec2 velocity,
         float mass, float width, float height, glm::vec4 colour) :
-        m_extents(width, height), m_colour(colour), RigidBody(BOX, position, velocity, 0, mass,
+        m_extents(width / 2, height / 2), m_colour(colour), RigidBody(BOX, position, velocity, 0, mass,
             1.0f / 12.0f * m_mass * (m_extents.x * 2) * (m_extents.y * 2), 0) {
     }
     ~Box() {}

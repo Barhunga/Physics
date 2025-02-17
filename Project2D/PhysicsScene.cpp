@@ -76,7 +76,7 @@ void PhysicsScene::update(float dt)
 
 				// create function pointer index value
 				int functionIdx = (shapeId1 * SHAPE_COUNT) + shapeId2;
-				//create and assign function pointer to correct index
+				// create and assign function pointer to correct index
 				fn collisionFunctionPtr = collisionFunctionArray[functionIdx];
 				if (collisionFunctionPtr != nullptr)
 				{
@@ -118,11 +118,6 @@ bool PhysicsScene::sphere2Box(PhysicsObject* obj1, PhysicsObject* obj2)
 	return false;
 }
 
-bool PhysicsScene::box2Plane(PhysicsObject* obj1, PhysicsObject* obj2)
-{
-	return false;
-}
-
 bool PhysicsScene::box2Sphere(PhysicsObject* obj1, PhysicsObject* obj2)
 {
 	return false;
@@ -146,8 +141,8 @@ float PhysicsScene::getTotalEnergy()
 
 bool PhysicsScene::plane2Box(PhysicsObject* obj1, PhysicsObject* obj2)
 {
-	Plane* plane = dynamic_cast<Plane*>(obj1);
-	Box* box = dynamic_cast<Box*>(obj2);
+	Box* box = dynamic_cast<Box*>(obj1);
+	Plane* plane = dynamic_cast<Plane*>(obj2);
 	//if we are successful then test for collision
 	if (box != nullptr && plane != nullptr)
 	{
