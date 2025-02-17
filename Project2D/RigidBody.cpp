@@ -71,9 +71,7 @@ void RigidBody::resolveCollision(RigidBody* actor2, glm::vec2 contact, glm::vec2
 
 float RigidBody::getKineticEnergy()
 {
-	float result = (1.f / 2.f) * m_mass * pow(glm::length(m_velocity), 2); // vector magnitude = length
-	//printf("%f\n", result); // print energy
-	return result; 
+	return 0.5f * (m_mass * glm::dot(m_velocity, m_velocity) + m_moment * m_angularVelocity * m_angularVelocity);
 }
 
 float RigidBody::getPotentialEnergy()

@@ -113,18 +113,59 @@ bool PhysicsScene::sphere2Sphere(PhysicsObject* obj1, PhysicsObject* obj2)
 	return false;
 }
 
-bool PhysicsScene::sphere2Box(PhysicsObject* obj1, PhysicsObject* obj2)
+bool PhysicsScene::box2Sphere(PhysicsObject* obj1, PhysicsObject* obj2)
 {
+	Box* box = dynamic_cast<Box*>(obj1);
+	Sphere* sphere = dynamic_cast<Sphere*>(obj2);
+	if (box != nullptr && sphere != nullptr)
+	{
+		// transform the circle into the box's coordinate space
+		glm::vec2 circlePosWorld = sphere->getPosition() - box->getPosition();
+		glm::vec2 circlePosBox = glm::vec2(glm::dot(circlePosWorld, box -> getLocalX()), glm::dot(circlePosWorld, box->getLocalY()));
+		// find the closest point to the circle centre on the box by clamping the coordinates in box - space to the box's extents
+		glm::vec2 closestPointOnBoxBox = circlePosBox;
+		glm::vec2 extents = box->getExtents();
+		if (closestPointOnBoxBox.x < -extents.x) closestPointOnBoxBox.x = -extents.x;
+		if (closestPointOnBoxBox.x > extents.x) closestPointOnBoxBox.x = extents.x;
+		if (closestPointOnBoxBox.y < -extents.y) closestPointOnBoxBox.y = -extents.y;
+		if (closestPointOnBoxBox.y > extents.y) closestPointOnBoxBox.y = extents.y;
+		// and convert back into world coordinates
+		glm::vec2 closestPointOnBoxWorld = box->getPosition() + closestPointOnBoxBox.x * box->getLocalX() + closestPointOnBoxBox.y * box->getLocalY();
+		glm::vec2 circleToBox = sphere->getPosition() - closestPointOnBoxWorld;
+		if (glm::length(circleToBox) < sphere->getRadius())
+		{
+			glm::vec2 direction = glm::normalize(circleToBox);
+			glm::vec2 contact = closestPointOnBoxWorld;
+			box->resolveCollision(sphere, contact, &direction);
+		}
+	}
 	return false;
 }
 
-bool PhysicsScene::box2Sphere(PhysicsObject* obj1, PhysicsObject* obj2)
-{
-	return false;
-}
 
 bool PhysicsScene::box2Box(PhysicsObject* obj1, PhysicsObject* obj2)
 {
+
+	Box* box1 = dynamic_cast<Box*>(obj1);
+	Box* box2 = dynamic_cast<Box*>(obj2);
+	if (box1 != nullptr && box2 != nullptr)
+	{
+		glm::vec2 boxPos = box2->getPosition() - box1->getPosition();
+		glm::vec2 norm(0, 0);
+		glm::vec2 contact(0, 0);
+		float pen = 0;
+		int numContacts = 0;
+		box1->checkBoxCorners(*box2, contact, numContacts, pen, norm);
+		if (box2->checkBoxCorners(*box1, contact, numContacts, pen, norm))
+		{
+			norm = -norm;
+		}
+		if (pen > 0) 
+		{
+			box1->resolveCollision(box2, contact / float(numContacts), &norm);
+		}
+		return true;
+	}
 	return false;
 }
 
