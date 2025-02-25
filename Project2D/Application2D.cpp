@@ -180,9 +180,9 @@ void Application2D::Physics()
 void Application2D::Billiards()
 {
 	m_gameID = BILLIARDS;
-	setBackgroundColour(0.15, 0.42, 0.27, 1);
+	setBackgroundColour(0.11, 0.30, 0.18, 1);
 
-	Sphere* cueBall = new Sphere(glm::vec2(54, 0), glm::vec2(0, 0), 170.0f, 4, glm::vec4(1, 1, 1, 1));
+	Sphere* cueBall = new Sphere(glm::vec2(54, 0), glm::vec2(-100, 0), 170.0f, 4, glm::vec4(1, 1, 1, 1));
 	Sphere* ball1 = new Sphere(glm::vec2(-44, 0),  glm::vec2(0, 0), 160.0f, 4, glm::vec4(1, 1, 0, 1));
 	Sphere* ball2 = new Sphere(glm::vec2(-51, -4), glm::vec2(0, 0), 160.0f, 4, glm::vec4(0, 0, 1, 1));
 	Sphere* ball3 = new Sphere(glm::vec2(-51, 4),  glm::vec2(0, 0), 160.0f, 4, glm::vec4(1, 0, 0, 1));
@@ -203,10 +203,10 @@ void Application2D::Billiards()
 	m_physicsScene->addActor(ball8);		  
 	m_physicsScene->addActor(ball9);*/		  
 
-	Plane* top = new Plane(glm::vec2(0, -1), -40,   glm::vec4(1, 1, 1, 0)); 
-	Plane* left = new Plane(glm::vec2(1, 0), -85,   glm::vec4(1, 1, 1, 0)); 
-	Plane* right = new Plane(glm::vec2(-1, 0), -85, glm::vec4(1, 1, 1, 0)); 
-	Plane* bottom = new Plane(glm::vec2(0, 1), -40, glm::vec4(1, 1, 1, 0)); 
+	Plane* top = new Plane(glm::vec2(0, -1), -40,   glm::vec4(1, 1, 1, 0.1)); 
+	Plane* left = new Plane(glm::vec2(1, 0), -85,   glm::vec4(1, 1, 1, 0.1)); 
+	Plane* right = new Plane(glm::vec2(-1, 0), -85, glm::vec4(1, 1, 1, 0.1)); 
+	Plane* bottom = new Plane(glm::vec2(0, 1), -40, glm::vec4(1, 1, 1, 0.1)); 
 	m_physicsScene->addActor(top); 
 	m_physicsScene->addActor(left); 
 	m_physicsScene->addActor(right);
