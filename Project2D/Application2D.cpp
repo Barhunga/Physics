@@ -187,11 +187,13 @@ void Application2D::Billiards()
 	Sphere* ball2 = new Sphere(glm::vec2(-51, -4), glm::vec2(0, 0), 160.0f, 4, glm::vec4(0, 0, 1, 1));
 	Sphere* ball3 = new Sphere(glm::vec2(-51, 4),  glm::vec2(0, 0), 160.0f, 4, glm::vec4(1, 0, 0, 1));
 	Sphere* ball4 = new Sphere(glm::vec2(-58, -8), glm::vec2(0, 0), 160.0f, 4, glm::vec4(0.53, 0, 0.68, 1));
-	Sphere* ball5 = new Sphere(glm::vec2(-58, 0),  glm::vec2(0, 0), 160.0f, 4, glm::vec4(1, 0.39, 0, 1));
-	Sphere* ball6 = new Sphere(glm::vec2(-58, 8),  glm::vec2(0, 0), 160.0f, 4, glm::vec4(0, 0.57, 0.27, 1));
-	//Sphere* ball7 = new Sphere(glm::vec2(-54, 0), glm::vec2(0, 0), 160.0f, 4, glm::vec4(0, 1, 0, 1));
-	//Sphere* ball8 = new Sphere(glm::vec2(-54, 0), glm::vec2(0, 0), 160.0f, 4, glm::vec4(0, 1, 0, 1));
-	//Sphere* ball9 = new Sphere(glm::vec2(-54, 0), glm::vec2(0, 0), 160.0f, 4, glm::vec4(0, 1, 0, 1));
+	Sphere* ball8 = new Sphere(glm::vec2(-58, 0), glm::vec2(0, 0), 160.0f, 4, glm::vec4(0, 0, 0, 1));
+	Sphere* ball5 = new Sphere(glm::vec2(-58, 8),  glm::vec2(0, 0), 160.0f, 4, glm::vec4(1, 0.39, 0, 1));
+	Sphere* ball6 = new Sphere(glm::vec2(-65, -12),  glm::vec2(0, 0), 160.0f, 4, glm::vec4(0, 0.57, 0.27, 1));
+	Sphere* ball7 = new Sphere(glm::vec2(-65, -4), glm::vec2(0, 0), 160.0f, 4, glm::vec4(0.64, 0.25, 0.17, 1));
+	Sphere* ball9 = new Sphere(glm::vec2(-65, 4), glm::vec2(0, 0), 160.0f, 4, glm::vec4(1, 1, 0.5, 1));		 
+	Sphere* ball10 = new Sphere(glm::vec2(-65, 12), glm::vec2(0, 0), 160.0f, 4, glm::vec4(0.5, 0.5, 1, 1));		 
+
 	m_physicsScene->addActor(cueBall);		  
 	m_physicsScene->addActor(ball1);
 	m_physicsScene->addActor(ball2);		  
@@ -199,9 +201,10 @@ void Application2D::Billiards()
 	m_physicsScene->addActor(ball4);		  
 	m_physicsScene->addActor(ball5);		  
 	m_physicsScene->addActor(ball6);		  
-/*	m_physicsScene->addActor(ball7);		  
-	m_physicsScene->addActor(ball8);		  
-	m_physicsScene->addActor(ball9);*/		  
+	m_physicsScene->addActor(ball7);		   
+	m_physicsScene->addActor(ball8);		   
+	m_physicsScene->addActor(ball9);		  	  
+	m_physicsScene->addActor(ball10);		  	  
 
 	Plane* top = new Plane(glm::vec2(0, -1), -40,   glm::vec4(1, 1, 1, 0.1)); 
 	Plane* left = new Plane(glm::vec2(1, 0), -85,   glm::vec4(1, 1, 1, 0.1)); 
