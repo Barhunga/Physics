@@ -4,8 +4,8 @@
 class Plane : public PhysicsObject
 {
 public:
-    Plane(glm::vec2 normal, float distance, glm::vec4 colour) :
-        m_normal(normal), m_distanceToOrigin(distance), m_colour(colour), PhysicsObject(PLANE) {};
+    Plane(glm::vec2 normal, float distance, float elasticity, glm::vec4 colour) :
+        m_normal(normal), m_distanceToOrigin(distance), m_colour(colour), PhysicsObject(PLANE, elasticity) {};
     ~Plane() {}
 
     virtual void fixedUpdate(glm::vec2 gravity, float timeStep) override {};

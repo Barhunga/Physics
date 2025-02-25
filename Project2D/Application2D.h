@@ -8,7 +8,8 @@
 #include "Box.h"
 
 enum GameType {
-	BILLIARDS = 1,
+	DVD = 1,
+	BILLIARDS,
 	PONG,
 	BUBBLEBOBBLE
 };
@@ -26,6 +27,7 @@ public:
 	virtual void draw();
 
 	void Physics();
+	void DVDPlayer();
 	void Billiards();
 	void Pong();
 	void BubbleBobble();

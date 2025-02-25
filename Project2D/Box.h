@@ -5,9 +5,9 @@ class Box : public RigidBody
 {
 public:
     Box(glm::vec2 position, glm::vec2 velocity,
-        float mass, float width, float height, float orientation, glm::vec4 colour) :
+        float mass, float width, float height, float orientation, float elasticity, glm::vec4 colour) :
         m_extents(width, height), m_colour(colour), RigidBody(BOX, position, velocity, orientation, mass,
-            1.0f / 12.0f * m_mass * (m_extents.x * 2) * (m_extents.y * 2), 0) {
+            1.0f / 12.0f * m_mass * (m_extents.x * 2) * (m_extents.y * 2), 0, elasticity) {
     }
     ~Box() {}
 

@@ -13,6 +13,7 @@ public:
 	void addActor(PhysicsObject* actor);
 	void removeActor(PhysicsObject* actor);
 	PhysicsObject* getActor(int index) { return m_actors[index]; }
+	size_t getActorCount() { return m_actors.size(); }
 	void update(float dt);
 	void draw();
 

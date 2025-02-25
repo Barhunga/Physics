@@ -3,6 +3,19 @@
 
 void RigidBody::fixedUpdate(glm::vec2 gravity, float timeStep)
 {
+	// apply drag
+	m_velocity -= m_velocity * m_linearDrag * timeStep; 
+	m_angularVelocity -= m_angularVelocity * m_angularDrag * timeStep; 
+
+	// stop movement if value is super low
+	if (length(m_velocity) < MIN_LINEAR_THRESHOLD) {
+		m_velocity = glm::vec2(0, 0); 
+	}
+	if (abs(m_angularVelocity) < MIN_ANGULAR_THRESHOLD) {
+		m_angularVelocity = 0;
+	}
+
+	// apply movement, gravity and rotation
 	m_position += m_velocity * timeStep;
 	applyForce(gravity * m_mass * timeStep, glm::vec2(0, 0));
 
@@ -48,7 +61,7 @@ void RigidBody::resolveCollision(RigidBody* actor2, glm::vec2 contact, glm::vec2
 		float mass1 = 1.0f / (1.0f / m_mass + (r1 * r1) / m_moment);
 		float mass2 = 1.0f / (1.0f / actor2->m_mass + (r2 * r2) / actor2->m_moment);
 
-		float elasticity = 1;
+		float elasticity = (getElasticity() + actor2->getElasticity()) / 2.f;
 
 		glm::vec2 force = (1.0f + elasticity) * mass1 * mass2 / (mass1 + mass2) * (v1 - v2) * normal;
 

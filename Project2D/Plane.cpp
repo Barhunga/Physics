@@ -31,10 +31,10 @@ void Plane::resolveCollision(RigidBody* actor2, glm::vec2 contact)
     if (velocityIntoPlane >= 0)
         return;
 
-    float elasticity = 1;
+    float elasticity = (getElasticity() + actor2->getElasticity()) / 2.f;
 
     // this is the perpendicular distance we apply the force at relative to the COM, so Torque = F * r
-        float r = glm::dot(localContact, glm::vec2(m_normal.y, -m_normal.x));
+    float r = glm::dot(localContact, glm::vec2(m_normal.y, -m_normal.x));
     // work out the "effective mass" - this is a combination of moment of
     // inertia and mass, and tells us how much the contact point velocity
     // will change with the force we're applying

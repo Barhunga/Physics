@@ -28,10 +28,13 @@ bool Application2D::startup() {
 
 	m_physicsScene = new PhysicsScene();
 
-	Physics();
+	//Physics();
 
-	//m_physicsScene->setGravity(glm::vec2(0, 0)); 
-	//Billiards();
+	m_physicsScene->setGravity(glm::vec2(0, 0)); 
+	//DVDPlayer();
+	Billiards();
+	//Pong();
+	//BubbleBobble();
 
 	return true;
 }
@@ -56,23 +59,73 @@ void Application2D::update(float deltaTime) {
 
 	switch (m_gameID) 
 	{
-	case BILLIARDS:
-		if (input->isKeyDown(aie::INPUT_KEY_LEFT))
-		{
-			//if (held == false && m_physicsScene->getActor(0)->getVelocity() == glm::vec2(0, 0))
-			//{
-			//	m_physicsScene->getActor(0)->setVelocity();
-			//	held = true;
-			//}
+
+	case DVD:
+		if (input->isKeyDown(aie::INPUT_KEY_DOWN)) {
+			if (held == false)
+			{
+				m_physicsScene->getActor(0)->setVelocity(glm::vec2(m_physicsScene->getActor(0)->getVelocity().x / 2,
+					m_physicsScene->getActor(0)->getVelocity().y / 2));
+				printf("%F %f\n", m_physicsScene->getActor(0)->getVelocity().x, m_physicsScene->getActor(0)->getVelocity().y);
+				held = true;
+			}
+		}
+		else if (input->isKeyDown(aie::INPUT_KEY_UP)) {
+			if (held == false)
+			{
+				m_physicsScene->getActor(0)->setVelocity(glm::vec2(m_physicsScene->getActor(0)->getVelocity().x * 2,
+					m_physicsScene->getActor(0)->getVelocity().y * 2));
+				held = true;
+			}
+		}
+		else if (input->isKeyDown(aie::INPUT_KEY_BACKSPACE)) {
+			if (held == false)
+			{
+				m_physicsScene->getActor(0)->setVelocity(glm::vec2(-m_physicsScene->getActor(0)->getVelocity().x,
+					-m_physicsScene->getActor(0)->getVelocity().y));
+				held = true;
+			}
 		}
 		else held = false;
 		break;
+
+	case BILLIARDS:
+		if (input->isKeyDown(aie::INPUT_KEY_LEFT))
+		{
+			if (held == false )
+			{
+				m_physicsScene->getActor(0)->setVelocity(glm::vec2(-400, 0));
+				held = true;
+			}
+		}
+		else 
+		{
+			// only do calculations if we need to
+			if (held)
+			{
+				// check all objects to see if they are moving
+				for (size_t i = 0; i < m_physicsScene->getActorCount(); i++)
+				{
+					if (m_physicsScene->getActor(i)->getVelocity() != glm::vec2(0, 0))
+					{
+						// exit early if object is moving
+						break;
+					}
+					// if we've made it to the end of the loop and all have been still, allow us to take our next shot
+					else if (i == m_physicsScene->getActorCount() - 1) held = false;
+				}
+			}
+		}
+		break;
+
 	case PONG:
 
 		break;
+
 	case BUBBLEBOBBLE:
 
 		break;
+
 	default:
 		// Update the camera position using the arrow keys - camera stuff in sample but not tut
 		float camPosX;
@@ -158,42 +211,59 @@ void Application2D::draw() {
 
 void Application2D::Physics()
 {
-	Sphere* ball1 = new Sphere(glm::vec2(-54, 0), glm::vec2(20, 17), 4.0f, 4, glm::vec4(0, 1, 0, 1));	    
-	Sphere* ball2 = new Sphere(glm::vec2(58, 0), glm::vec2(-20, 15), 8.0f, 8, glm::vec4(0, 1, 0, 1));	   
-	Sphere* ball3 = new Sphere(glm::vec2(0, 0), glm::vec2(0, 0), 4.0f, 4, glm::vec4(0, 1, 0, 1));		   
-	Box* box1 = new Box(glm::vec2(-20, 10), glm::vec2(0, 0), 4.0f, 2, 4, 0, glm::vec4(0, 1, 0, 1));		   
-	Box* box2 = new Box(glm::vec2(-40, 10), glm::vec2(0, 0), 4.0f, 2, 4, 1, glm::vec4(0, 1, 0, 1));		   
+	Sphere* ball1 = new Sphere(glm::vec2(-54, 0), glm::vec2(20, 17), 4.0f, 4, 0.8, glm::vec4(0, 1, 0, 1));	    
+	Sphere* ball2 = new Sphere(glm::vec2(58, 0), glm::vec2(-20, 15), 8.0f, 8, 0.8, glm::vec4(0, 1, 0, 1));	   
+	Sphere* ball3 = new Sphere(glm::vec2(0, 0), glm::vec2(0, 0), 4.0f, 4, 0.8, glm::vec4(0, 1, 0, 1));		   
+	Box* box1 = new Box(glm::vec2(-20, 10), glm::vec2(20, 20), 4.0f, 2, 4, 0, 0.8, glm::vec4(0, 1, 0, 1));		   
+	Box* box2 = new Box(glm::vec2(-40, 10), glm::vec2(0, 60), 4.0f, 2, 4, 1, 0.8, glm::vec4(0, 1, 0, 1));		   
 	m_physicsScene->addActor(ball1);																	   
 	m_physicsScene->addActor(ball2);																	   
 	m_physicsScene->addActor(ball3);																	   
 	m_physicsScene->addActor(box1);																		   
 	m_physicsScene->addActor(box2);																		   
 																										   
-	Plane* plane1 = new Plane(glm::vec2(-1, 0), -85, glm::vec4(0, 0, 1, 1));							   
-	Plane* plane2 = new Plane(glm::vec2(1, 0), -85, glm::vec4(0, 0, 1, 1));								   
-	Plane* plane3 = new Plane(glm::vec2(0, 1), -40, glm::vec4(0, 0, 1, 1));								   
+	Plane* plane1 = new Plane(glm::vec2(-1, 0), -85, 0.6, glm::vec4(0, 0, 1, 1));							   
+	Plane* plane2 = new Plane(glm::vec2(1, 0), -85, 0.6, glm::vec4(0, 0, 1, 1));								   
+	Plane* plane3 = new Plane(glm::vec2(0, 1), -40, 0.6, glm::vec4(0, 0, 1, 1));								   
 	m_physicsScene->addActor(plane1);																	   
 	m_physicsScene->addActor(plane2);																	   
 	m_physicsScene->addActor(plane3);																	   
 }
+
+void Application2D::DVDPlayer()
+{
+	m_gameID = DVD;
+
+	Sphere* ball1 = new Sphere(glm::vec2(0, 0), glm::vec2(20, 20), 4.0f, 4, 1, glm::vec4(0, 1, 0, 1));
+	ball1->setDrag(0);
+	m_physicsScene->addActor(ball1); 
+
+	Plane* plane1 = new Plane(glm::vec2(-1, 0), -85, 1, glm::vec4(0, 0, 1, 1));  // -40 instead of -85 for perfect bounce	  
+	Plane* plane2 = new Plane(glm::vec2(1, 0), -85,  1, glm::vec4(0, 0, 1, 1));  // -40 instead of -85 for perfect bounce	  
+	Plane* plane3 = new Plane(glm::vec2(0, 1), -40,  1, glm::vec4(0, 0, 1, 1));												  
+	Plane* plane4 = new Plane(glm::vec2(0, -1), -40, 1, glm::vec4(0, 0, 1, 1));											  
+	m_physicsScene->addActor(plane1);																					  
+	m_physicsScene->addActor(plane2);																					  
+	m_physicsScene->addActor(plane3);																					  
+	m_physicsScene->addActor(plane4);																					  
+}																														  
 
 void Application2D::Billiards()
 {
 	m_gameID = BILLIARDS;
 	setBackgroundColour(0.11, 0.30, 0.18, 1);
 
-	Sphere* cueBall = new Sphere(glm::vec2(54, 0), glm::vec2(-100, 0), 170.0f, 4, glm::vec4(1, 1, 1, 1));
-	Sphere* ball1 = new Sphere(glm::vec2(-44, 0),  glm::vec2(0, 0), 160.0f, 4, glm::vec4(1, 1, 0, 1));
-	Sphere* ball2 = new Sphere(glm::vec2(-51, -4), glm::vec2(0, 0), 160.0f, 4, glm::vec4(0, 0, 1, 1));
-	Sphere* ball3 = new Sphere(glm::vec2(-51, 4),  glm::vec2(0, 0), 160.0f, 4, glm::vec4(1, 0, 0, 1));
-	Sphere* ball4 = new Sphere(glm::vec2(-58, -8), glm::vec2(0, 0), 160.0f, 4, glm::vec4(0.53, 0, 0.68, 1));
-	Sphere* ball8 = new Sphere(glm::vec2(-58, 0), glm::vec2(0, 0), 160.0f, 4, glm::vec4(0, 0, 0, 1));
-	Sphere* ball5 = new Sphere(glm::vec2(-58, 8),  glm::vec2(0, 0), 160.0f, 4, glm::vec4(1, 0.39, 0, 1));
-	Sphere* ball6 = new Sphere(glm::vec2(-65, -12),  glm::vec2(0, 0), 160.0f, 4, glm::vec4(0, 0.57, 0.27, 1));
-	Sphere* ball7 = new Sphere(glm::vec2(-65, -4), glm::vec2(0, 0), 160.0f, 4, glm::vec4(0.64, 0.25, 0.17, 1));
-	Sphere* ball9 = new Sphere(glm::vec2(-65, 4), glm::vec2(0, 0), 160.0f, 4, glm::vec4(1, 1, 0.5, 1));		 
-	Sphere* ball10 = new Sphere(glm::vec2(-65, 12), glm::vec2(0, 0), 160.0f, 4, glm::vec4(0.5, 0.5, 1, 1));		 
-
+	Sphere* cueBall = new Sphere(glm::vec2(54, 0),  glm::vec2(0, 0), 170.0f, 4, 0.8, glm::vec4(1, 1, 1, 1));
+	Sphere* ball1 = new Sphere(glm::vec2(-44, 0),   glm::vec2(0, 0), 160.0f, 4, 0.8, glm::vec4(1, 1, 0, 1));
+	Sphere* ball2 = new Sphere(glm::vec2(-51, -4),  glm::vec2(0, 0), 160.0f, 4, 0.8, glm::vec4(0, 0, 1, 1));
+	Sphere* ball3 = new Sphere(glm::vec2(-51, 4),   glm::vec2(0, 0), 160.0f, 4, 0.8, glm::vec4(1, 0, 0, 1));
+	Sphere* ball4 = new Sphere(glm::vec2(-58, -8),  glm::vec2(0, 0), 160.0f, 4, 0.8, glm::vec4(0.53, 0, 0.68, 1));
+	Sphere* ball8 = new Sphere(glm::vec2(-58, 0),   glm::vec2(0, 0), 160.0f, 4, 0.8, glm::vec4(0, 0, 0, 1));
+	Sphere* ball5 = new Sphere(glm::vec2(-58, 8),   glm::vec2(0, 0), 160.0f, 4, 0.8, glm::vec4(1, 0.39, 0, 1));
+	Sphere* ball6 = new Sphere(glm::vec2(-65, -12), glm::vec2(0, 0), 160.0f, 4, 0.8, glm::vec4(0, 0.57, 0.27, 1));
+	Sphere* ball7 = new Sphere(glm::vec2(-65, -4),  glm::vec2(0, 0), 160.0f, 4, 0.8, glm::vec4(0.64, 0.25, 0.17, 1));
+	Sphere* ball9 = new Sphere(glm::vec2(-65, 4),   glm::vec2(0, 0), 160.0f, 4, 0.8, glm::vec4(1, 1, 0.5, 1));		 
+	Sphere* ball10 = new Sphere(glm::vec2(-65, 12), glm::vec2(0, 0), 160.0f, 4, 0.8, glm::vec4(0.5, 0.5, 1, 1));		 
 	m_physicsScene->addActor(cueBall);		  
 	m_physicsScene->addActor(ball1);
 	m_physicsScene->addActor(ball2);		  
@@ -206,10 +276,10 @@ void Application2D::Billiards()
 	m_physicsScene->addActor(ball9);		  	  
 	m_physicsScene->addActor(ball10);		  	  
 
-	Plane* top = new Plane(glm::vec2(0, -1), -40,   glm::vec4(1, 1, 1, 0.1)); 
-	Plane* left = new Plane(glm::vec2(1, 0), -85,   glm::vec4(1, 1, 1, 0.1)); 
-	Plane* right = new Plane(glm::vec2(-1, 0), -85, glm::vec4(1, 1, 1, 0.1)); 
-	Plane* bottom = new Plane(glm::vec2(0, 1), -40, glm::vec4(1, 1, 1, 0.1)); 
+	Plane* top = new Plane(glm::vec2(0, -1), -40,   0.6, glm::vec4(1, 1, 1, 0.1)); 
+	Plane* left = new Plane(glm::vec2(1, 0), -85,   0.6, glm::vec4(1, 1, 1, 0.1)); 
+	Plane* right = new Plane(glm::vec2(-1, 0), -85, 0.6, glm::vec4(1, 1, 1, 0.1)); 
+	Plane* bottom = new Plane(glm::vec2(0, 1), -40, 0.6, glm::vec4(1, 1, 1, 0.1)); 
 	m_physicsScene->addActor(top); 
 	m_physicsScene->addActor(left); 
 	m_physicsScene->addActor(right);

@@ -4,9 +4,9 @@ class Sphere : public RigidBody
 {
 public:
     Sphere(glm::vec2 position, glm::vec2 velocity,
-        float mass, float radius, glm::vec4 colour) : 
+        float mass, float radius, float elasticity, glm::vec4 colour) :
         m_radius(radius), m_colour(colour), RigidBody(SPHERE, position, velocity, 0, mass, 
-        0.5 * m_mass * m_radius * m_radius, 0) {}
+        0.5 * m_mass * m_radius * m_radius, 0, elasticity) {}
     ~Sphere() {}
 
     virtual void draw() override;
