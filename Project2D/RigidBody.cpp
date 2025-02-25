@@ -3,6 +3,16 @@
 
 void RigidBody::fixedUpdate(glm::vec2 gravity, float timeStep)
 {
+	if (m_isKinematic)
+	{
+		// allow for player control
+		m_position += m_velocity * timeStep;
+		// zero out movement before physics checks
+		m_velocity = glm::vec2(0);
+		m_angularVelocity = 0;
+		return;
+	}
+
 	// apply drag
 	m_velocity -= m_velocity * m_linearDrag * timeStep; 
 	m_angularVelocity -= m_angularVelocity * m_angularDrag * timeStep; 
@@ -17,7 +27,7 @@ void RigidBody::fixedUpdate(glm::vec2 gravity, float timeStep)
 
 	// apply movement, gravity and rotation
 	m_position += m_velocity * timeStep;
-	applyForce(gravity * m_mass * timeStep, glm::vec2(0, 0));
+	applyForce(gravity * getMass() * timeStep, glm::vec2(0, 0));
 
 	m_orientation += m_angularVelocity * timeStep;
 }
@@ -37,7 +47,7 @@ void RigidBody::applyForceToActor(RigidBody* actor2, glm::vec2 force, glm::vec2 
 	applyForce(-force, pos - m_position);
 }
 
-void RigidBody::resolveCollision(RigidBody* actor2, glm::vec2 contact, glm::vec2* collisionNormal)
+void RigidBody::resolveCollision(RigidBody* actor2, glm::vec2 contact, glm::vec2* collisionNormal, float pen)
 {
 	// if the normal is provided, use that. otherwise find the vector between their centers
 	glm::vec2 normal = glm::normalize(collisionNormal ? *collisionNormal : actor2->getPosition() - m_position); 
@@ -58,8 +68,8 @@ void RigidBody::resolveCollision(RigidBody* actor2, glm::vec2 contact, glm::vec2
 	if (v1 > v2) { // if they're moving closer
 		// calculate the effective mass at contact point for each object
 		// ie how much the contact point will move due to the force applied.
-		float mass1 = 1.0f / (1.0f / m_mass + (r1 * r1) / m_moment);
-		float mass2 = 1.0f / (1.0f / actor2->m_mass + (r2 * r2) / actor2->m_moment);
+		float mass1 = 1.0f / (1.0f / getMass() + (r1 * r1) / getMoment());
+		float mass2 = 1.0f / (1.0f / actor2->getMass() + (r2 * r2) / actor2->getMoment());
 
 		float elasticity = (getElasticity() + actor2->getElasticity()) / 2.f;
 
@@ -80,11 +90,12 @@ void RigidBody::resolveCollision(RigidBody* actor2, glm::vec2 contact, glm::vec2
 		//if (deltaKE > kePost * 0.01f)
 		//	printf("Kinetic Energy discrepancy greater than 1%% detected!!\n");
 	}
+	if (pen > 0) PhysicsScene::ApplyContactForces(this, actor2, normal, pen);
 }
 
 float RigidBody::getKineticEnergy()
 {
-	return 0.5f * (m_mass * glm::dot(m_velocity, m_velocity) + m_moment * m_angularVelocity * m_angularVelocity);
+	return 0.5f * (getMass() * glm::dot(m_velocity, m_velocity) + getMoment() * m_angularVelocity * m_angularVelocity);
 }
 
 float RigidBody::getPotentialEnergy()

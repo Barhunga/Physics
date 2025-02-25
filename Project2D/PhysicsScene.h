@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 
 class PhysicsObject;
+class RigidBody;
 
 class PhysicsScene
 {
@@ -34,6 +35,8 @@ public:
 	static bool box2Plane(PhysicsObject* obj1, PhysicsObject* obj2) { return plane2Box(obj2, obj1); }
 	static bool box2Sphere(PhysicsObject*, PhysicsObject*);
 	static bool box2Box(PhysicsObject*, PhysicsObject*);
+
+	static void ApplyContactForces(RigidBody* body1, RigidBody* body2, glm::vec2 norm, float pen);
 
 protected:
 	static glm::vec2 m_gravity;

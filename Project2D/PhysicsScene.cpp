@@ -104,9 +104,10 @@ bool PhysicsScene::sphere2Sphere(PhysicsObject* obj1, PhysicsObject* obj2)
 	if (sphere1 != nullptr && sphere2 != nullptr)
 	{
 		// compare the distance to the sum of the radii
-		if (glm::distance(sphere1->getPosition(), sphere2->getPosition()) <= sphere1->getRadius() + sphere2->getRadius()) {
+		float penetration = sphere1->getRadius() + sphere2->getRadius() - glm::distance(sphere1->getPosition(), sphere2->getPosition()); 
+		if (penetration > 0) { 
 			// process collision
-			sphere1->resolveCollision(sphere2, 0.5f * (sphere1->getPosition() + sphere2->getPosition()));
+			sphere1->resolveCollision(sphere2, 0.5f * (sphere1->getPosition() + sphere2->getPosition()), nullptr, penetration); 
 			return true;
 		}
 	}
@@ -132,11 +133,13 @@ bool PhysicsScene::box2Sphere(PhysicsObject* obj1, PhysicsObject* obj2)
 		// and convert back into world coordinates
 		glm::vec2 closestPointOnBoxWorld = box->getPosition() + closestPointOnBoxBox.x * box->getLocalX() + closestPointOnBoxBox.y * box->getLocalY();
 		glm::vec2 circleToBox = sphere->getPosition() - closestPointOnBoxWorld;
-		if (glm::length(circleToBox) < sphere->getRadius())
+
+		float penetration = sphere->getRadius() - glm::length(circleToBox); 
+		if (penetration > 0)
 		{
 			glm::vec2 direction = glm::normalize(circleToBox);
 			glm::vec2 contact = closestPointOnBoxWorld;
-			box->resolveCollision(sphere, contact, &direction);
+			box->resolveCollision(sphere, contact, &direction, penetration); 
 		}
 	}
 	return false;
@@ -162,11 +165,21 @@ bool PhysicsScene::box2Box(PhysicsObject* obj1, PhysicsObject* obj2)
 		}
 		if (pen > 0) 
 		{
-			box1->resolveCollision(box2, contact / float(numContacts), &norm);
+			box1->resolveCollision(box2, contact / float(numContacts), &norm, pen); 
 		}
 		return true;
 	}
 	return false;
+}
+
+void PhysicsScene::ApplyContactForces(RigidBody* body1, RigidBody* body2, glm::vec2 norm, float pen)
+{
+	// body2 can be null for a Plane
+	float body2Mass = body2 ? body2->getMass() : INT_MAX;
+	float body1Factor = body2Mass / (body1->getMass() + body2Mass);
+	body1->setPosition(body1->getPosition() - body1Factor * norm * pen);
+	if (body2)
+		body2->setPosition(body2->getPosition() + (1 - body1Factor) * norm * pen);
 }
 
 float PhysicsScene::getTotalEnergy()

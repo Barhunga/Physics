@@ -1,4 +1,5 @@
 #include "Plane.h"
+#include "PhysicsScene.h"
 
 void Plane::draw()
 {
@@ -46,6 +47,9 @@ void Plane::resolveCollision(RigidBody* actor2, glm::vec2 contact)
     float kePre = actor2->getKineticEnergy();
 
     actor2->applyForce(force, contact - actor2->getPosition());
+
+    float pen = glm::dot(contact, m_normal) - m_distanceToOrigin;
+    PhysicsScene::ApplyContactForces(actor2, nullptr, m_normal, pen);
 
     float kePost = actor2->getKineticEnergy();
     float deltaKE = kePost - kePre;

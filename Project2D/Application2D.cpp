@@ -28,11 +28,12 @@ bool Application2D::startup() {
 
 	m_physicsScene = new PhysicsScene();
 
-	//Physics();
+	Physics();
 
-	m_physicsScene->setGravity(glm::vec2(0, 0)); 
+	// remove gravity for the below scenarios
+	//m_physicsScene->setGravity(glm::vec2(0, 0)); 
 	//DVDPlayer();
-	Billiards();
+	//Billiards();
 	//Pong();
 	//BubbleBobble();
 
@@ -127,24 +128,27 @@ void Application2D::update(float deltaTime) {
 		break;
 
 	default:
-		// Update the camera position using the arrow keys - camera stuff in sample but not tut
-		float camPosX;
-		float camPosY;
-		m_2dRenderer->getCameraPos(camPosX, camPosY);
-
 		if (input->isKeyDown(aie::INPUT_KEY_UP))
-			camPosY += 500.0f * deltaTime;
+			m_physicsScene->getActor(3)->setVelocity(glm::vec2(0, 10));
+		else m_physicsScene->getActor(3)->setVelocity(glm::vec2(0, 0));
+		//// Update the camera position using the arrow keys - camera stuff in sample but not tut
+		//float camPosX;
+		//float camPosY;
+		//m_2dRenderer->getCameraPos(camPosX, camPosY);
 
-		if (input->isKeyDown(aie::INPUT_KEY_DOWN))
-			camPosY -= 500.0f * deltaTime;
+		//if (input->isKeyDown(aie::INPUT_KEY_UP))
+		//	camPosY += 500.0f * deltaTime;
 
-		if (input->isKeyDown(aie::INPUT_KEY_LEFT))
-			camPosX -= 500.0f * deltaTime;
+		//if (input->isKeyDown(aie::INPUT_KEY_DOWN))
+		//	camPosY -= 500.0f * deltaTime;
 
-		if (input->isKeyDown(aie::INPUT_KEY_RIGHT))
-			camPosX += 500.0f * deltaTime;
+		//if (input->isKeyDown(aie::INPUT_KEY_LEFT))
+		//	camPosX -= 500.0f * deltaTime;
 
-		m_2dRenderer->setCameraPos(camPosX, camPosY);
+		//if (input->isKeyDown(aie::INPUT_KEY_RIGHT))
+		//	camPosX += 500.0f * deltaTime;
+
+		//m_2dRenderer->setCameraPos(camPosX, camPosY);
 	}
 
 	aie::Gizmos::clear();
@@ -213,14 +217,20 @@ void Application2D::Physics()
 {
 	Sphere* ball1 = new Sphere(glm::vec2(-54, 0), glm::vec2(20, 17), 4.0f, 4, 0.8, glm::vec4(0, 1, 0, 1));	    
 	Sphere* ball2 = new Sphere(glm::vec2(58, 0), glm::vec2(-20, 15), 8.0f, 8, 0.8, glm::vec4(0, 1, 0, 1));	   
-	Sphere* ball3 = new Sphere(glm::vec2(0, 0), glm::vec2(0, 0), 4.0f, 4, 0.8, glm::vec4(0, 1, 0, 1));		   
+	Sphere* ball3 = new Sphere(glm::vec2(0, 0), glm::vec2(0, 0), 4.0f, 4, 0.8, glm::vec4(0, 1, 0, 1));		    
+	Sphere* ball4 = new Sphere(glm::vec2(10, 0), glm::vec2(0, 0), 4.0f, 4, 0.8, glm::vec4(0, 1, 0, 1));		
+	ball4->setKinematic(true);
 	Box* box1 = new Box(glm::vec2(-20, 10), glm::vec2(20, 20), 4.0f, 2, 4, 0, 0.8, glm::vec4(0, 1, 0, 1));		   
-	Box* box2 = new Box(glm::vec2(-40, 10), glm::vec2(0, 60), 4.0f, 2, 4, 1, 0.8, glm::vec4(0, 1, 0, 1));		   
+	Box* box2 = new Box(glm::vec2(-40, 10), glm::vec2(0, 60), 4.0f, 2, 4, 1, 0.8, glm::vec4(0, 1, 0, 1));		    
+	Box* box3 = new Box(glm::vec2(-40, -20), glm::vec2(0, 60), 4.0f, 2, 4, 1, 0.8, glm::vec4(0, 1, 0, 1));		
+	box3->setKinematic(true); 
 	m_physicsScene->addActor(ball1);																	   
 	m_physicsScene->addActor(ball2);																	   
 	m_physicsScene->addActor(ball3);																	   
+	m_physicsScene->addActor(ball4);																	   
 	m_physicsScene->addActor(box1);																		   
-	m_physicsScene->addActor(box2);																		   
+	m_physicsScene->addActor(box2);			 															   
+	m_physicsScene->addActor(box3);																		   
 																										   
 	Plane* plane1 = new Plane(glm::vec2(-1, 0), -85, 0.6, glm::vec4(0, 0, 1, 1));							   
 	Plane* plane2 = new Plane(glm::vec2(1, 0), -85, 0.6, glm::vec4(0, 0, 1, 1));								   
