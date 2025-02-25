@@ -7,6 +7,12 @@
 #include "Plane.h"
 #include "Box.h"
 
+enum GameType {
+	BILLIARDS = 1,
+	PONG,
+	BUBBLEBOBBLE
+};
+
 class Application2D : public aie::Application {
 public:
 
@@ -19,6 +25,11 @@ public:
 	virtual void update(float deltaTime);
 	virtual void draw();
 
+	void Physics();
+	void Billiards();
+	void Pong();
+	void BubbleBobble();
+
 protected:
 
 	aie::Renderer2D*	m_2dRenderer;
@@ -29,4 +40,6 @@ protected:
 	PhysicsScene* m_physicsScene;
 
 	float m_timer;
+
+	GameType m_gameID;
 };

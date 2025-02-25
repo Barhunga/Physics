@@ -28,23 +28,10 @@ bool Application2D::startup() {
 
 	m_physicsScene = new PhysicsScene();
 
-	Sphere* ball1 = new Sphere(glm::vec2(-54, 0), glm::vec2(20, 17), 4.0f, 4, glm::vec4(0, 1, 0, 1));
-	Sphere* ball2 = new Sphere(glm::vec2(58, 0), glm::vec2(-20, 15), 8.0f, 8, glm::vec4(0, 1, 0, 1));
-	Sphere* ball3 = new Sphere(glm::vec2(0, 0), glm::vec2(0, 0), 4.0f, 4, glm::vec4(0, 1, 0, 1));
-	Box* box1 = new Box(glm::vec2(-20, 10), glm::vec2(0, 0), 4.0f, 2, 4, 0, glm::vec4(0, 1, 0, 1));
-	Box* box2 = new Box(glm::vec2(-40, 10), glm::vec2(0, 0), 4.0f, 2, 4, 1, glm::vec4(0, 1, 0, 1));
-	m_physicsScene->addActor(ball1);
-	m_physicsScene->addActor(ball2);
-	m_physicsScene->addActor(ball3);
-	m_physicsScene->addActor(box1);
-	m_physicsScene->addActor(box2);
+	Physics();
 
-	Plane* plane1 = new Plane(glm::vec2(-1, 0), -85, glm::vec4(0,0,1,1));
-	Plane* plane2 = new Plane(glm::vec2(1, 0), -85, glm::vec4(0,0,1,1));
-	Plane* plane3 = new Plane(glm::vec2(0, 1), -40, glm::vec4(0,0,1,1));
-	m_physicsScene->addActor(plane1);
-	m_physicsScene->addActor(plane2);
-	m_physicsScene->addActor(plane3);
+	//m_physicsScene->setGravity(glm::vec2(0, 0)); 
+	//Billiards();
 
 	return true;
 }
@@ -65,25 +52,47 @@ void Application2D::update(float deltaTime) {
 
 	// input example
 	aie::Input* input = aie::Input::getInstance();
+	static bool held = false;
 
-	// Update the camera position using the arrow keys - camera stuff in sample but not tut
-	float camPosX;
-	float camPosY;
-	m_2dRenderer->getCameraPos(camPosX, camPosY);
+	switch (m_gameID) 
+	{
+	case BILLIARDS:
+		if (input->isKeyDown(aie::INPUT_KEY_LEFT))
+		{
+			//if (held == false && m_physicsScene->getActor(0)->getVelocity() == glm::vec2(0, 0))
+			//{
+			//	m_physicsScene->getActor(0)->setVelocity();
+			//	held = true;
+			//}
+		}
+		else held = false;
+		break;
+	case PONG:
 
-	if (input->isKeyDown(aie::INPUT_KEY_UP))
-		camPosY += 500.0f * deltaTime;
+		break;
+	case BUBBLEBOBBLE:
 
-	if (input->isKeyDown(aie::INPUT_KEY_DOWN))
-		camPosY -= 500.0f * deltaTime;
+		break;
+	default:
+		// Update the camera position using the arrow keys - camera stuff in sample but not tut
+		float camPosX;
+		float camPosY;
+		m_2dRenderer->getCameraPos(camPosX, camPosY);
 
-	if (input->isKeyDown(aie::INPUT_KEY_LEFT))
-		camPosX -= 500.0f * deltaTime;
+		if (input->isKeyDown(aie::INPUT_KEY_UP))
+			camPosY += 500.0f * deltaTime;
 
-	if (input->isKeyDown(aie::INPUT_KEY_RIGHT))
-		camPosX += 500.0f * deltaTime;
+		if (input->isKeyDown(aie::INPUT_KEY_DOWN))
+			camPosY -= 500.0f * deltaTime;
 
-	m_2dRenderer->setCameraPos(camPosX, camPosY);
+		if (input->isKeyDown(aie::INPUT_KEY_LEFT))
+			camPosX -= 500.0f * deltaTime;
+
+		if (input->isKeyDown(aie::INPUT_KEY_RIGHT))
+			camPosX += 500.0f * deltaTime;
+
+		m_2dRenderer->setCameraPos(camPosX, camPosY);
+	}
 
 	aie::Gizmos::clear();
 
@@ -105,32 +114,32 @@ void Application2D::draw() {
 	// begin drawing sprites
 	m_2dRenderer->begin();
 
-	// These objects drawn were part of the sample but not the tut
+	//// These objects drawn were part of the sample but not the tut
 
-	// demonstrate animation
-	m_2dRenderer->setUVRect(int(m_timer) % 8 / 8.0f, 0, 1.f / 8, 1.f / 8);
-	m_2dRenderer->drawSprite(m_texture, 200, 200, 100, 100);
+	//// demonstrate animation
+	//m_2dRenderer->setUVRect(int(m_timer) % 8 / 8.0f, 0, 1.f / 8, 1.f / 8);
+	//m_2dRenderer->drawSprite(m_texture, 200, 200, 100, 100);
 
-	// demonstrate spinning sprite
-	m_2dRenderer->setUVRect(0,0,1,1);
-	m_2dRenderer->drawSprite(m_shipTexture, 600, 400, 0, 0, m_timer, 1);
+	//// demonstrate spinning sprite
+	//m_2dRenderer->setUVRect(0,0,1,1);
+	//m_2dRenderer->drawSprite(m_shipTexture, 600, 400, 0, 0, m_timer, 1);
 
-	// draw a thin line
-	m_2dRenderer->drawLine(300, 300, 600, 400, 2, 1);
+	//// draw a thin line
+	//m_2dRenderer->drawLine(300, 300, 600, 400, 2, 1);
 
-	// draw a moving purple circle
-	m_2dRenderer->setRenderColour(1, 0, 1, 1);
-	m_2dRenderer->drawCircle(sin(m_timer) * 100 + 600, 150, 50);
+	//// draw a moving purple circle
+	//m_2dRenderer->setRenderColour(1, 0, 1, 1);
+	//m_2dRenderer->drawCircle(sin(m_timer) * 100 + 600, 150, 50);
 
-	// draw a rotating red box
-	m_2dRenderer->setRenderColour(1, 0, 0, 1);
-	m_2dRenderer->drawBox(600, 500, 60, 20, m_timer);
+	//// draw a rotating red box
+	//m_2dRenderer->setRenderColour(1, 0, 0, 1);
+	//m_2dRenderer->drawBox(600, 500, 60, 20, m_timer);
 
-	// draw a slightly rotated sprite with no texture, coloured yellow
-	m_2dRenderer->setRenderColour(1, 1, 0, 1);
-	m_2dRenderer->drawSprite(nullptr, 400, 400, 50, 50, 3.14159f * 0.25f, 1);
+	//// draw a slightly rotated sprite with no texture, coloured yellow
+	//m_2dRenderer->setRenderColour(1, 1, 0, 1);
+	//m_2dRenderer->drawSprite(nullptr, 400, 400, 50, 50, 3.14159f * 0.25f, 1);
 
-	//
+	////
 
 	// draw your stuff here!
 	static float aspectRatio = 16 / 9.f;
@@ -145,4 +154,71 @@ void Application2D::draw() {
 
 	// done drawing sprites
 	m_2dRenderer->end();
+}
+
+void Application2D::Physics()
+{
+	Sphere* ball1 = new Sphere(glm::vec2(-54, 0), glm::vec2(20, 17), 4.0f, 4, glm::vec4(0, 1, 0, 1));	    
+	Sphere* ball2 = new Sphere(glm::vec2(58, 0), glm::vec2(-20, 15), 8.0f, 8, glm::vec4(0, 1, 0, 1));	   
+	Sphere* ball3 = new Sphere(glm::vec2(0, 0), glm::vec2(0, 0), 4.0f, 4, glm::vec4(0, 1, 0, 1));		   
+	Box* box1 = new Box(glm::vec2(-20, 10), glm::vec2(0, 0), 4.0f, 2, 4, 0, glm::vec4(0, 1, 0, 1));		   
+	Box* box2 = new Box(glm::vec2(-40, 10), glm::vec2(0, 0), 4.0f, 2, 4, 1, glm::vec4(0, 1, 0, 1));		   
+	m_physicsScene->addActor(ball1);																	   
+	m_physicsScene->addActor(ball2);																	   
+	m_physicsScene->addActor(ball3);																	   
+	m_physicsScene->addActor(box1);																		   
+	m_physicsScene->addActor(box2);																		   
+																										   
+	Plane* plane1 = new Plane(glm::vec2(-1, 0), -85, glm::vec4(0, 0, 1, 1));							   
+	Plane* plane2 = new Plane(glm::vec2(1, 0), -85, glm::vec4(0, 0, 1, 1));								   
+	Plane* plane3 = new Plane(glm::vec2(0, 1), -40, glm::vec4(0, 0, 1, 1));								   
+	m_physicsScene->addActor(plane1);																	   
+	m_physicsScene->addActor(plane2);																	   
+	m_physicsScene->addActor(plane3);																	   
+}
+
+void Application2D::Billiards()
+{
+	m_gameID = BILLIARDS;
+	setBackgroundColour(0.15, 0.42, 0.27, 1);
+
+	Sphere* cueBall = new Sphere(glm::vec2(54, 0), glm::vec2(0, 0), 170.0f, 4, glm::vec4(1, 1, 1, 1));
+	Sphere* ball1 = new Sphere(glm::vec2(-44, 0),  glm::vec2(0, 0), 160.0f, 4, glm::vec4(1, 1, 0, 1));
+	Sphere* ball2 = new Sphere(glm::vec2(-51, -4), glm::vec2(0, 0), 160.0f, 4, glm::vec4(0, 0, 1, 1));
+	Sphere* ball3 = new Sphere(glm::vec2(-51, 4),  glm::vec2(0, 0), 160.0f, 4, glm::vec4(1, 0, 0, 1));
+	Sphere* ball4 = new Sphere(glm::vec2(-58, -8), glm::vec2(0, 0), 160.0f, 4, glm::vec4(0.53, 0, 0.68, 1));
+	Sphere* ball5 = new Sphere(glm::vec2(-58, 0),  glm::vec2(0, 0), 160.0f, 4, glm::vec4(1, 0.39, 0, 1));
+	Sphere* ball6 = new Sphere(glm::vec2(-58, 8),  glm::vec2(0, 0), 160.0f, 4, glm::vec4(0, 0.57, 0.27, 1));
+	//Sphere* ball7 = new Sphere(glm::vec2(-54, 0), glm::vec2(0, 0), 160.0f, 4, glm::vec4(0, 1, 0, 1));
+	//Sphere* ball8 = new Sphere(glm::vec2(-54, 0), glm::vec2(0, 0), 160.0f, 4, glm::vec4(0, 1, 0, 1));
+	//Sphere* ball9 = new Sphere(glm::vec2(-54, 0), glm::vec2(0, 0), 160.0f, 4, glm::vec4(0, 1, 0, 1));
+	m_physicsScene->addActor(cueBall);		  
+	m_physicsScene->addActor(ball1);
+	m_physicsScene->addActor(ball2);		  
+	m_physicsScene->addActor(ball3);		  
+	m_physicsScene->addActor(ball4);		  
+	m_physicsScene->addActor(ball5);		  
+	m_physicsScene->addActor(ball6);		  
+/*	m_physicsScene->addActor(ball7);		  
+	m_physicsScene->addActor(ball8);		  
+	m_physicsScene->addActor(ball9);*/		  
+
+	Plane* top = new Plane(glm::vec2(0, -1), -40,   glm::vec4(1, 1, 1, 0)); 
+	Plane* left = new Plane(glm::vec2(1, 0), -85,   glm::vec4(1, 1, 1, 0)); 
+	Plane* right = new Plane(glm::vec2(-1, 0), -85, glm::vec4(1, 1, 1, 0)); 
+	Plane* bottom = new Plane(glm::vec2(0, 1), -40, glm::vec4(1, 1, 1, 0)); 
+	m_physicsScene->addActor(top); 
+	m_physicsScene->addActor(left); 
+	m_physicsScene->addActor(right);
+	m_physicsScene->addActor(bottom); 
+}
+
+void Application2D::Pong()
+{
+	m_gameID = PONG; 
+}
+
+void Application2D::BubbleBobble()
+{
+	m_gameID = BUBBLEBOBBLE; 
 }
