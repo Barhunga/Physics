@@ -27,6 +27,7 @@ public:
 	virtual void draw();
 
 	void Physics();
+	void RotationDemo();
 	void DVDPlayer();
 	void Billiards();
 	void Pong();

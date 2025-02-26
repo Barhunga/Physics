@@ -2,7 +2,7 @@
 #include "PhysicsObject.h"
 
 #define MIN_LINEAR_THRESHOLD 1.5f
-#define MIN_ANGULAR_THRESHOLD 0.15f
+#define MIN_ANGULAR_THRESHOLD 1.f
 
 class RigidBody : public PhysicsObject
 {

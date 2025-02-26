@@ -64,7 +64,6 @@ void RigidBody::resolveCollision(RigidBody* actor2, glm::vec2 contact, glm::vec2
 	float v1 = glm::dot(m_velocity, normal) - r1 * m_angularVelocity;
 	float v2 = glm::dot(actor2->m_velocity, normal) + r2 * actor2->m_angularVelocity;
 
-	//	return;
 	if (v1 > v2) { // if they're moving closer
 		// calculate the effective mass at contact point for each object
 		// ie how much the contact point will move due to the force applied.
@@ -90,7 +89,7 @@ void RigidBody::resolveCollision(RigidBody* actor2, glm::vec2 contact, glm::vec2
 		//if (deltaKE > kePost * 0.01f)
 		//	printf("Kinetic Energy discrepancy greater than 1%% detected!!\n");
 	}
-	if (pen > 0) PhysicsScene::ApplyContactForces(this, actor2, normal, pen);
+	if (pen > 0) PhysicsScene::ApplyContactForces(this, actor2, normal, pen); 
 }
 
 float RigidBody::getKineticEnergy()

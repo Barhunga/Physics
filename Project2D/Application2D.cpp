@@ -28,10 +28,11 @@ bool Application2D::startup() {
 
 	m_physicsScene = new PhysicsScene();
 
-	Physics();
+	Physics(); 
 
 	// remove gravity for the below scenarios
 	//m_physicsScene->setGravity(glm::vec2(0, 0)); 
+	//RotationDemo();
 	//DVDPlayer();
 	//Billiards();
 	//Pong();
@@ -130,7 +131,7 @@ void Application2D::update(float deltaTime) {
 	default:
 		if (input->isKeyDown(aie::INPUT_KEY_UP))
 			m_physicsScene->getActor(3)->setVelocity(glm::vec2(0, 10));
-		else m_physicsScene->getActor(3)->setVelocity(glm::vec2(0, 0));
+
 		//// Update the camera position using the arrow keys - camera stuff in sample but not tut
 		//float camPosX;
 		//float camPosY;
@@ -240,6 +241,29 @@ void Application2D::Physics()
 	m_physicsScene->addActor(plane3);																	   
 }
 
+void Application2D::RotationDemo()
+{
+	Sphere* ballYellow = new Sphere(glm::vec2(-30, 30), glm::vec2(30, 0), 1.f, 2, 1, glm::vec4(1, 1, 0, 1));
+	Sphere* ballWhite = new Sphere(glm::vec2(-30, -2), glm::vec2(30, 0), 1.f, 2, 1, glm::vec4(1, 1, 1, 1));
+	Sphere* ballGreen = new Sphere(glm::vec2(-30, -34), glm::vec2(30, 0), 1.f, 2, 1, glm::vec4(0, 1, 0, 1));
+	ballYellow->setDrag(0);
+	ballWhite->setDrag(0);
+	ballGreen->setDrag(0);
+	m_physicsScene->addActor(ballYellow);
+	m_physicsScene->addActor(ballWhite);
+	m_physicsScene->addActor(ballGreen);
+
+	Box* boxTop = new Box(glm::vec2(30, 30), glm::vec2(0, 0), 10, 2, 8, 0, 1, glm::vec4(0, 1, 1, 1));
+	Box* boxMiddle = new Box(glm::vec2(30, 0), glm::vec2(0, 0), 10, 2, 8, 0, 1, glm::vec4(0, 1, 1, 1));
+	Box* boxBottom = new Box(glm::vec2(30, -30), glm::vec2(0, 0), 10, 2, 8, 0, 1, glm::vec4(0, 1, 1, 1));
+	boxTop->setDrag(0);
+	boxMiddle->setDrag(0);
+	boxBottom->setDrag(0);
+	m_physicsScene->addActor(boxTop);
+	m_physicsScene->addActor(boxMiddle);
+	m_physicsScene->addActor(boxBottom);
+}
+
 void Application2D::DVDPlayer()
 {
 	m_gameID = DVD;
@@ -248,10 +272,10 @@ void Application2D::DVDPlayer()
 	ball1->setDrag(0);
 	m_physicsScene->addActor(ball1); 
 
-	Plane* plane1 = new Plane(glm::vec2(-1, 0), -85, 1, glm::vec4(0, 0, 1, 1));  // -40 instead of -85 for perfect bounce	  
-	Plane* plane2 = new Plane(glm::vec2(1, 0), -85,  1, glm::vec4(0, 0, 1, 1));  // -40 instead of -85 for perfect bounce	  
-	Plane* plane3 = new Plane(glm::vec2(0, 1), -40,  1, glm::vec4(0, 0, 1, 1));												  
-	Plane* plane4 = new Plane(glm::vec2(0, -1), -40, 1, glm::vec4(0, 0, 1, 1));											  
+	Plane* plane1 = new Plane(glm::vec2(-1, 0), -85, 1,  glm::vec4(0, 0, 1, 1));  // -40 instead of -85 for perfect bounce	  
+	Plane* plane2 = new Plane(glm::vec2(1, 0),  -85, 1,  glm::vec4(0, 0, 1, 1));  // -40 instead of -85 for perfect bounce	  
+	Plane* plane3 = new Plane(glm::vec2(0, 1),  -40, 1,  glm::vec4(0, 0, 1, 1));												  
+	Plane* plane4 = new Plane(glm::vec2(0, -1), -40, 1,  glm::vec4(0, 0, 1, 1));											  
 	m_physicsScene->addActor(plane1);																					  
 	m_physicsScene->addActor(plane2);																					  
 	m_physicsScene->addActor(plane3);																					  
