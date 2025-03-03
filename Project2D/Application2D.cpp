@@ -136,7 +136,7 @@ void Application2D::update(float deltaTime) {
 				if (pocket != nullptr && ball != nullptr)
 				{
 					float distance = glm::distance(pocket->getPosition(), ball->getPosition());
-					if (distance <= pocket->getRadius())
+					if (distance <= pocket->getRadius() + 1)
 					{
 						if (j == 10) // is cue ball
 						{
@@ -327,12 +327,12 @@ void Application2D::Billiards()
 	m_physicsScene->addActor(right);
 	m_physicsScene->addActor(bottom);
 
-	Sphere* pocket1 = new Sphere(glm::vec2(-83, 38),  glm::vec2(0, 0), 160.0f, 5, 0.8, glm::vec4(0, 0, 0, 1));
-	Sphere* pocket2 = new Sphere(glm::vec2(0, 38),    glm::vec2(0, 0), 160.0f, 5, 0.8, glm::vec4(0, 0, 0, 1));
-	Sphere* pocket3 = new Sphere(glm::vec2(83, 38),   glm::vec2(0, 0), 160.0f, 5, 0.8, glm::vec4(0, 0, 0, 1));
-	Sphere* pocket4 = new Sphere(glm::vec2(-83, -38), glm::vec2(0, 0), 160.0f, 5, 0.8, glm::vec4(0, 0, 0, 1));
-	Sphere* pocket5 = new Sphere(glm::vec2(0, -38),   glm::vec2(0, 0), 160.0f, 5, 0.8, glm::vec4(0, 0, 0, 1));
-	Sphere* pocket6 = new Sphere(glm::vec2(83, -38),  glm::vec2(0, 0), 160.0f, 5, 0.8, glm::vec4(0, 0, 0, 1));
+	Sphere* pocket1 = new Sphere(glm::vec2(-84, 39),  glm::vec2(0, 0), 160.0f, 6, 0.8, glm::vec4(0, 0, 0, 1));
+	Sphere* pocket2 = new Sphere(glm::vec2(0, 39),    glm::vec2(0, 0), 160.0f, 6, 0.8, glm::vec4(0, 0, 0, 1));
+	Sphere* pocket3 = new Sphere(glm::vec2(84, 39),   glm::vec2(0, 0), 160.0f, 6, 0.8, glm::vec4(0, 0, 0, 1));
+	Sphere* pocket4 = new Sphere(glm::vec2(-84, -39), glm::vec2(0, 0), 160.0f, 6, 0.8, glm::vec4(0, 0, 0, 1));
+	Sphere* pocket5 = new Sphere(glm::vec2(0, -39),   glm::vec2(0, 0), 160.0f, 6, 0.8, glm::vec4(0, 0, 0, 1));
+	Sphere* pocket6 = new Sphere(glm::vec2(84, -39),  glm::vec2(0, 0), 160.0f, 6, 0.8, glm::vec4(0, 0, 0, 1));
 	pocket1->setIsHole(true); 
 	pocket2->setIsHole(true);
 	pocket3->setIsHole(true);
