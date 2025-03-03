@@ -28,13 +28,13 @@ bool Application2D::startup() {
 
 	m_physicsScene = new PhysicsScene();
 
-	Physics(); 
+	//Physics(); 
 
 	// remove gravity for the below scenarios
-	//m_physicsScene->setGravity(glm::vec2(0, 0)); 
+	m_physicsScene->setGravity(glm::vec2(0, 0)); 
 	//RotationDemo();
 	//DVDPlayer();
-	//Billiards();
+	Billiards();
 	//Pong();
 	//BubbleBobble();
 
@@ -96,7 +96,7 @@ void Application2D::update(float deltaTime) {
 		{
 			if (held == false )
 			{
-				m_physicsScene->getActor(0)->setVelocity(glm::vec2(-400, 0));
+				m_physicsScene->getActor(10)->setVelocity(glm::vec2(-500, 0));
 				held = true;
 			}
 		}
@@ -106,7 +106,7 @@ void Application2D::update(float deltaTime) {
 			if (held)
 			{
 				// check all objects to see if they are moving
-				for (size_t i = 0; i < m_physicsScene->getActorCount(); i++)
+				for (size_t i = 10; i < m_physicsScene->getActorCount(); i++)
 				{
 					if (m_physicsScene->getActor(i)->getVelocity() != glm::vec2(0, 0))
 					{
@@ -114,7 +114,38 @@ void Application2D::update(float deltaTime) {
 						break;
 					}
 					// if we've made it to the end of the loop and all have been still, allow us to take our next shot
-					else if (i == m_physicsScene->getActorCount() - 1) held = false;
+					else if (i == m_physicsScene->getActorCount() - 1)
+					{
+						Sphere* cueBall = dynamic_cast<Sphere*>(m_physicsScene->getActor(10));
+						if (cueBall->getPosition().x == 200) cueBall->setPosition(glm::vec2(54, 0));
+						held = false;
+					}
+				}
+			}
+		}
+
+		// pocket collisions
+		for (size_t i = 4; i < 10; i++) // pockets
+		{
+			for (size_t j = 10; j < m_physicsScene->getActorCount(); j++) // balls
+			{
+				// try to cast objects to sphere and sphere
+				Sphere* pocket = dynamic_cast<Sphere*>(m_physicsScene->getActor(i)); 
+				Sphere* ball = dynamic_cast<Sphere*>(m_physicsScene->getActor(j)); 
+				// if we are successful then test for collision
+				if (pocket != nullptr && ball != nullptr)
+				{
+					float distance = glm::distance(pocket->getPosition(), ball->getPosition());
+					if (distance <= pocket->getRadius())
+					{
+						if (j == 10) // is cue ball
+						{
+							ball->setVelocity(glm::vec2(0, 0));
+							ball->setPosition(glm::vec2(200, 0));
+						}
+						else
+							m_physicsScene->removeActor(ball);
+					}
 				}
 			}
 		}
@@ -287,6 +318,40 @@ void Application2D::Billiards()
 	m_gameID = BILLIARDS;
 	setBackgroundColour(0.11, 0.30, 0.18, 1);
 
+	Plane* top = new Plane(glm::vec2(0, -1), -40, 0.6, glm::vec4(1, 1, 1, 0.1));
+	Plane* left = new Plane(glm::vec2(1, 0), -85, 0.6, glm::vec4(1, 1, 1, 0.1));
+	Plane* right = new Plane(glm::vec2(-1, 0), -85, 0.6, glm::vec4(1, 1, 1, 0.1));
+	Plane* bottom = new Plane(glm::vec2(0, 1), -40, 0.6, glm::vec4(1, 1, 1, 0.1));
+	m_physicsScene->addActor(top);
+	m_physicsScene->addActor(left);
+	m_physicsScene->addActor(right);
+	m_physicsScene->addActor(bottom);
+
+	Sphere* pocket1 = new Sphere(glm::vec2(-83, 38),  glm::vec2(0, 0), 160.0f, 5, 0.8, glm::vec4(0, 0, 0, 1));
+	Sphere* pocket2 = new Sphere(glm::vec2(0, 38),    glm::vec2(0, 0), 160.0f, 5, 0.8, glm::vec4(0, 0, 0, 1));
+	Sphere* pocket3 = new Sphere(glm::vec2(83, 38),   glm::vec2(0, 0), 160.0f, 5, 0.8, glm::vec4(0, 0, 0, 1));
+	Sphere* pocket4 = new Sphere(glm::vec2(-83, -38), glm::vec2(0, 0), 160.0f, 5, 0.8, glm::vec4(0, 0, 0, 1));
+	Sphere* pocket5 = new Sphere(glm::vec2(0, -38),   glm::vec2(0, 0), 160.0f, 5, 0.8, glm::vec4(0, 0, 0, 1));
+	Sphere* pocket6 = new Sphere(glm::vec2(83, -38),  glm::vec2(0, 0), 160.0f, 5, 0.8, glm::vec4(0, 0, 0, 1));
+	pocket1->setIsHole(true); 
+	pocket2->setIsHole(true);
+	pocket3->setIsHole(true);
+	pocket4->setIsHole(true);
+	pocket5->setIsHole(true);
+	pocket6->setIsHole(true);
+	pocket1->setKinematic(true); 
+	pocket2->setKinematic(true);
+	pocket3->setKinematic(true);
+	pocket4->setKinematic(true);
+	pocket5->setKinematic(true);
+	pocket6->setKinematic(true);
+	m_physicsScene->addActor(pocket1);
+	m_physicsScene->addActor(pocket2);
+	m_physicsScene->addActor(pocket3);
+	m_physicsScene->addActor(pocket4);
+	m_physicsScene->addActor(pocket5);
+	m_physicsScene->addActor(pocket6);
+
 	Sphere* cueBall = new Sphere(glm::vec2(54, 0),  glm::vec2(0, 0), 170.0f, 4, 0.8, glm::vec4(1, 1, 1, 1));
 	Sphere* ball1 = new Sphere(glm::vec2(-44, 0),   glm::vec2(0, 0), 160.0f, 4, 0.8, glm::vec4(1, 1, 0, 1));
 	Sphere* ball2 = new Sphere(glm::vec2(-51, -4),  glm::vec2(0, 0), 160.0f, 4, 0.8, glm::vec4(0, 0, 1, 1));
@@ -309,15 +374,6 @@ void Application2D::Billiards()
 	m_physicsScene->addActor(ball8);		   
 	m_physicsScene->addActor(ball9);		  	  
 	m_physicsScene->addActor(ball10);		  	  
-
-	Plane* top = new Plane(glm::vec2(0, -1), -40,   0.6, glm::vec4(1, 1, 1, 0.1)); 
-	Plane* left = new Plane(glm::vec2(1, 0), -85,   0.6, glm::vec4(1, 1, 1, 0.1)); 
-	Plane* right = new Plane(glm::vec2(-1, 0), -85, 0.6, glm::vec4(1, 1, 1, 0.1)); 
-	Plane* bottom = new Plane(glm::vec2(0, 1), -40, 0.6, glm::vec4(1, 1, 1, 0.1)); 
-	m_physicsScene->addActor(top); 
-	m_physicsScene->addActor(left); 
-	m_physicsScene->addActor(right);
-	m_physicsScene->addActor(bottom); 
 }
 
 void Application2D::Pong()

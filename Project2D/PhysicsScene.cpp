@@ -103,9 +103,12 @@ bool PhysicsScene::sphere2Sphere(PhysicsObject* obj1, PhysicsObject* obj2)
 	// if we are successful then test for collision
 	if (sphere1 != nullptr && sphere2 != nullptr)
 	{
+		if (sphere1->getIsHole() || sphere2->getIsHole())
+			return false;
 		// compare the distance to the sum of the radii
 		float penetration = sphere1->getRadius() + sphere2->getRadius() - glm::distance(sphere1->getPosition(), sphere2->getPosition()); 
-		if (penetration > 0) { 
+		if (penetration > 0) 
+		{ 
 			// process collision
 			sphere1->resolveCollision(sphere2, 0.5f * (sphere1->getPosition() + sphere2->getPosition()), nullptr, penetration); 
 			return true;
