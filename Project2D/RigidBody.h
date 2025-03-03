@@ -26,6 +26,8 @@ public:
     float getMoment() { return m_isKinematic ? INT_MAX : m_moment; }
     float getAngularVelocity() { return m_angularVelocity; }
     bool isKinematic() { return m_isKinematic; }
+    glm::vec2 getLocalX() { return m_localX; }
+    glm::vec2 getLocalY() { return m_localY; }
 
     float getKineticEnergy();
     float getPotentialEnergy();
@@ -35,6 +37,8 @@ public:
     void setPosition(glm::vec2 pos) { m_position = pos; }
     void setDrag(float drag) { m_linearDrag = drag; m_angularDrag = drag; }
     void setKinematic(bool state) { m_isKinematic = state; }
+
+    glm::vec2 toWorld(glm::vec2 pos) { return m_position + (m_localX * pos.x + m_localY * pos.y); } 
 
 protected:
     glm::vec2 m_position;
@@ -49,5 +53,9 @@ protected:
     float m_angularDrag = 0.3f;
 
     bool m_isKinematic = false;
+
+    // store the local x,y axes of the box based on its angle of rotation
+    glm::vec2 m_localX;
+    glm::vec2 m_localY;
 };
 

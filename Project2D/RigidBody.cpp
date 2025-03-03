@@ -3,6 +3,12 @@
 
 void RigidBody::fixedUpdate(glm::vec2 gravity, float timeStep)
 {
+	//store the local axes
+	float cs = cosf(m_orientation);
+	float sn = sinf(m_orientation);
+	m_localX = glm::normalize(glm::vec2(cs, sn));
+	m_localY = glm::normalize(glm::vec2(-sn, cs));
+
 	if (m_isKinematic)
 	{
 		// allow for player control

@@ -29,12 +29,13 @@ bool Application2D::startup() {
 	m_physicsScene = new PhysicsScene();
 
 	//Physics(); 
+	Rope(5);
 
 	// remove gravity for the below scenarios
-	m_physicsScene->setGravity(glm::vec2(0, 0)); 
+	//m_physicsScene->setGravity(glm::vec2(0, 0)); 
 	//RotationDemo();
 	//DVDPlayer();
-	Billiards();
+	//Billiards();
 	//Pong();
 	//BubbleBobble();
 
@@ -293,6 +294,27 @@ void Application2D::RotationDemo()
 	m_physicsScene->addActor(boxTop);
 	m_physicsScene->addActor(boxMiddle);
 	m_physicsScene->addActor(boxBottom);
+}
+
+void Application2D::Rope(int num)
+{
+	m_physicsScene->setGravity(glm::vec2(0, -9.82f));
+	Sphere* prev = nullptr;
+	for (int i = 0; i < num; i++)
+	{
+		// spawn a sphere to the right and below the previous one, so that the whole rope acts under gravity and swings
+			Sphere* sphere = new Sphere(glm::vec2(i * 3, 30 - i * 5), glm::vec2(0), 10, 2, 1, glm::vec4(1, 0, 0, 1));
+		if (i == 0)
+			sphere->setKinematic(true);
+		m_physicsScene->addActor(sphere);
+		if (prev)
+			m_physicsScene->addActor(new Spring(sphere, prev, 500, 10, 7));
+		prev = sphere;
+	}
+	// add a kinematic box at an angle for the rope to drape over
+	Box* box = new Box(glm::vec2(0, -20), glm::vec2(0), 20, 8, 2, 0.3f, 1, glm::vec4(0, 0, 1, 1));
+	box->setKinematic(true);
+	m_physicsScene->addActor(box);
 }
 
 void Application2D::DVDPlayer()

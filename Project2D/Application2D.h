@@ -6,6 +6,7 @@
 #include "Sphere.h"
 #include "Plane.h"
 #include "Box.h"
+#include "Spring.h"
 
 enum GameType {
 	DVD = 1,
@@ -28,6 +29,7 @@ public:
 
 	void Physics();
 	void RotationDemo();
+	void Rope(int num);
 	void DVDPlayer();
 	void Billiards();
 	void Pong();

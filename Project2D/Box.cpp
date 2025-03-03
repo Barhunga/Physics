@@ -15,16 +15,6 @@ void Box::draw()
 	aie::Gizmos::add2DTri(p1, p4, p3, m_colour);
 }
 
-void Box::fixedUpdate(glm::vec2 gravity, float timeStep)
-{
-	RigidBody::fixedUpdate(gravity, timeStep);
-	//store the local axes
-	float cs = cosf(m_orientation);
-	float sn = sinf(m_orientation);
-	m_localX = glm::normalize(glm::vec2(cs, sn));
-	m_localY = glm::normalize(glm::vec2(-sn, cs));
-}
-
 bool Box::checkBoxCorners(const Box& box, glm::vec2& contact, int& numContacts, float& pen, glm::vec2& edgeNormal)
 {
 	float minX, maxX, minY, maxY;

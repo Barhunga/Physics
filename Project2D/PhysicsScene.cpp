@@ -74,6 +74,11 @@ void PhysicsScene::update(float dt)
 				int shapeId1 = object1->getShapeID();
 				int shapeId2 = object2->getShapeID();
 
+				// this check will ensure we don't include any joints
+				// in the collision checks
+				if (shapeId1 < 0 || shapeId2 < 0)
+					continue;
+
 				// create function pointer index value
 				int functionIdx = (shapeId1 * SHAPE_COUNT) + shapeId2;
 				// create and assign function pointer to correct index
