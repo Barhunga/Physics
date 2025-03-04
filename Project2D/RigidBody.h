@@ -38,7 +38,7 @@ public:
     void setDrag(float drag) { m_linearDrag = drag; m_angularDrag = drag; }
     void setKinematic(bool state) { m_isKinematic = state; }
 
-    glm::vec2 toWorld(glm::vec2 pos) { return m_position + (m_localX * pos.x + m_localY * pos.y); } 
+    glm::vec2 toWorld(glm::vec2 contact) { return m_position + (m_localX * contact.x) + (m_localY * contact.y); } // who knows if this is correct
 
 protected:
     glm::vec2 m_position;

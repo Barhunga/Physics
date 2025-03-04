@@ -19,11 +19,12 @@ void Spring::fixedUpdate(glm::vec2 gravity, float timeStep)
 	glm::vec2 relativeVelocity = m_body2->getVelocity() - m_body1->getVelocity();
 	// F = -kX - bv
 	glm::vec2 force = direction * m_springCoefficient * (m_restLength - length) - m_damping * relativeVelocity;
-	m_body1->applyForce(-force * timeStep, p1 - m_body1->getPosition());
-	m_body2->applyForce(force * timeStep, p2 - m_body2->getPosition());
+	m_body1->applyForce(-force * timeStep, p1 - m_body1->getPosition()); 
+	m_body2->applyForce(force * timeStep, p2 - m_body2->getPosition()); 
 }
 
 void Spring::draw()
 {
-	aie::Gizmos::add2DLine(getContact1(), getContact2(), glm::vec4(1, 0, 0, 1));
+	aie::Gizmos::add2DLine(getContact1(), getContact2(), glm::vec4(1, 1, 1, 1));
+	//printf("drawing spring at\n%f %f\n%f %f\n", getContact1().x, getContact1().y, getContact2().x, getContact2().y);
 }

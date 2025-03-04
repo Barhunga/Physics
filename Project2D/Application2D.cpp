@@ -29,7 +29,7 @@ bool Application2D::startup() {
 	m_physicsScene = new PhysicsScene();
 
 	//Physics(); 
-	Rope(5);
+	Rope(10);
 
 	// remove gravity for the below scenarios
 	//m_physicsScene->setGravity(glm::vec2(0, 0)); 
@@ -303,7 +303,7 @@ void Application2D::Rope(int num)
 	for (int i = 0; i < num; i++)
 	{
 		// spawn a sphere to the right and below the previous one, so that the whole rope acts under gravity and swings
-			Sphere* sphere = new Sphere(glm::vec2(i * 3, 30 - i * 5), glm::vec2(0), 10, 2, 1, glm::vec4(1, 0, 0, 1));
+		Sphere* sphere = new Sphere(glm::vec2(i * 3, 30 - i * 5), glm::vec2(0), 10, 2, 1, glm::vec4(1, 1, 0, 1));
 		if (i == 0)
 			sphere->setKinematic(true);
 		m_physicsScene->addActor(sphere);
