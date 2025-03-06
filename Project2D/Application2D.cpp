@@ -29,13 +29,13 @@ bool Application2D::startup() {
 	m_physicsScene = new PhysicsScene();
 
 	//Physics(); 
-	Rope(10);
+	//Rope(10);
 
 	// remove gravity for the below scenarios
-	//m_physicsScene->setGravity(glm::vec2(0, 0)); 
+	m_physicsScene->setGravity(glm::vec2(0, 0)); 
 	//RotationDemo();
 	//DVDPlayer();
-	//Billiards();
+	Billiards();
 	//Pong();
 	//BubbleBobble();
 
@@ -88,6 +88,16 @@ void Application2D::update(float deltaTime) {
 					-m_physicsScene->getActor(0)->getVelocity().y));
 				held = true;
 			}
+		}
+		else if (input->isKeyDown(aie::INPUT_KEY_LEFT))
+		{
+			Plane* plane = dynamic_cast<Plane*>(m_physicsScene->getActor(1));
+			plane->setDistance(plane->getDistance() + 0.1);
+		}
+		else if (input->isKeyDown(aie::INPUT_KEY_RIGHT))
+		{
+			Plane* plane = dynamic_cast<Plane*>(m_physicsScene->getActor(1));
+			plane->setDistance(plane->getDistance() - 0.1);
 		}
 		else held = false;
 		break;
@@ -162,7 +172,13 @@ void Application2D::update(float deltaTime) {
 
 	default:
 		if (input->isKeyDown(aie::INPUT_KEY_UP))
-			m_physicsScene->getActor(3)->setVelocity(glm::vec2(0, 10));
+			m_physicsScene->getActor(19)->setVelocity(glm::vec2(0, 10));
+		else if (input->isKeyDown(aie::INPUT_KEY_DOWN))
+			m_physicsScene->getActor(19)->setVelocity(glm::vec2(0, -10));
+		else if (input->isKeyDown(aie::INPUT_KEY_LEFT))
+			m_physicsScene->getActor(19)->setVelocity(glm::vec2(-10, 0));
+		else if (input->isKeyDown(aie::INPUT_KEY_RIGHT))
+			m_physicsScene->getActor(19)->setVelocity(glm::vec2(10, 0));
 
 		//// Update the camera position using the arrow keys - camera stuff in sample but not tut
 		//float camPosX;
