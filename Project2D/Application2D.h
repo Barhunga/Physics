@@ -27,6 +27,8 @@ public:
 	virtual void update(float deltaTime);
 	virtual void draw();
 
+	void SceneSelect();
+
 	void Physics();
 	void RotationDemo();
 	void Rope(int num);
@@ -47,4 +49,5 @@ protected:
 	float m_timer;
 
 	GameType m_gameID;
+	int m_sceneID;
 };

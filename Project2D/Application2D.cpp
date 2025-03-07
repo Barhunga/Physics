@@ -27,17 +27,8 @@ bool Application2D::startup() {
 	m_timer = 0;
 
 	m_physicsScene = new PhysicsScene();
-
-	//Physics(); 
-	//Rope(10);
-
-	// remove gravity for the below scenarios
-	m_physicsScene->setGravity(glm::vec2(0, 0)); 
-	//RotationDemo();
-	//DVDPlayer();
-	Billiards();
-	//Pong();
-	//BubbleBobble();
+	m_sceneID = 0;
+	SceneSelect();
 
 	return true;
 }
@@ -59,17 +50,18 @@ void Application2D::update(float deltaTime) {
 	// input example
 	aie::Input* input = aie::Input::getInstance();
 	static bool held = false;
+	static bool canShoot = true;
 
+	// handle inputs
 	switch (m_gameID) 
 	{
-
 	case DVD:
 		if (input->isKeyDown(aie::INPUT_KEY_DOWN)) {
 			if (held == false)
 			{
-				m_physicsScene->getActor(0)->setVelocity(glm::vec2(m_physicsScene->getActor(0)->getVelocity().x / 2,
-					m_physicsScene->getActor(0)->getVelocity().y / 2));
-				printf("%F %f\n", m_physicsScene->getActor(0)->getVelocity().x, m_physicsScene->getActor(0)->getVelocity().y);
+				if(length(m_physicsScene->getActor(0)->getVelocity()) >= 6) // make sure it doesnt reach the lower threshold
+					m_physicsScene->getActor(0)->setVelocity(glm::vec2(m_physicsScene->getActor(0)->getVelocity().x / 2,
+						m_physicsScene->getActor(0)->getVelocity().y / 2));
 				held = true;
 			}
 		}
@@ -105,16 +97,16 @@ void Application2D::update(float deltaTime) {
 	case BILLIARDS:
 		if (input->isKeyDown(aie::INPUT_KEY_SPACE))
 		{
-			if (held == false )
+			if (canShoot == true)
 			{
 				m_physicsScene->getActor(10)->setVelocity(glm::vec2(-500, 0));
-				held = true;
+				canShoot = false;
 			}
 		}
 		else 
 		{
 			// only do calculations if we need to
-			if (held)
+			if (!canShoot)
 			{
 				// check all objects to see if they are moving
 				for (size_t i = 10; i < m_physicsScene->getActorCount(); i++)
@@ -129,7 +121,7 @@ void Application2D::update(float deltaTime) {
 					{
 						Sphere* cueBall = dynamic_cast<Sphere*>(m_physicsScene->getActor(10));
 						if (cueBall->getPosition().x == 200) cueBall->setPosition(glm::vec2(54, 0));
-						held = false;
+						canShoot = true;
 					}
 				}
 			}
@@ -208,14 +200,43 @@ void Application2D::update(float deltaTime) {
 	}
 
 	aie::Gizmos::clear();
-
 	m_physicsScene->update(deltaTime);
 	m_physicsScene->draw();
 
 	//printf("%f\n", m_physicsScene->getTotalEnergy());
 
-	// exit the application
-	if (input->isKeyDown(aie::INPUT_KEY_ESCAPE))
+	// switching scenes
+	static bool switching = false;
+	if (switching == false && input->isKeyDown(aie::INPUT_KEY_EQUAL))
+	{
+		switching = true;
+		if (m_sceneID < 6)
+		{
+			while (m_physicsScene->getActorCount() > 0)
+			{
+				m_physicsScene->removeActor(m_physicsScene->getActor(0));
+			}
+			m_sceneID++;
+			SceneSelect();
+		}
+	}
+	if (switching == false && input->isKeyDown(aie::INPUT_KEY_MINUS))
+	{
+		switching = true;
+		if (m_sceneID > 0)
+		{
+			while (m_physicsScene->getActorCount() > 0)
+			{
+				m_physicsScene->removeActor(m_physicsScene->getActor(0));
+			}
+			m_sceneID--;
+			SceneSelect();
+		}
+	}
+	if (!input->isKeyDown(aie::INPUT_KEY_EQUAL) && !input->isKeyDown(aie::INPUT_KEY_MINUS)) switching = false;
+
+	// exit the game
+	if(input->isKeyDown(aie::INPUT_KEY_ESCAPE))
 		quit();
 }
 
@@ -263,14 +284,83 @@ void Application2D::draw() {
 	char fps[32];
 	sprintf_s(fps, 32, "FPS: %i", getFPS());
 	m_2dRenderer->drawText(m_font, fps, 0, 720 - 32);
-	m_2dRenderer->drawText(m_font, "Press ESC to quit!", 0, 720 - 64);
+	m_2dRenderer->drawText(m_font, "Press + or - to switch scenes!", 0, 720 - 64);
+	m_2dRenderer->drawText(m_font, "Press ESC to quit!", 1200 - 240, 720 - 32);
+
+	// display controls
+	m_2dRenderer->setRenderColour(0, 1, 0, 1); // green
+	switch (m_sceneID)
+	{
+		case 0:
+			// Physics
+			break;
+		case 1:
+			// Rope
+			m_2dRenderer->drawText(m_font, "UP/DOWN/LEFT/RIGHT - Move Box", 0, 720 - 710);
+			break;
+		case 2:
+			// Rotation
+			break;
+		case 3:
+			// DVD
+			m_2dRenderer->drawText(m_font, "UP/DOWN - Change Speed | BACKSPACE - Reverse | LEFT/RIGHT - Move Wall", 0, 720 - 710);
+			break;
+		case 4:
+			// Billiards
+			m_2dRenderer->drawText(m_font, "SPACE - Take Shot", 0, 720 - 710);
+			break;
+		case 5:
+			// Pong
+
+			break;
+		case 6:
+			// BubbleBobble
+
+			break;
+		default:
+			break;
+	}
 
 	// done drawing sprites
 	m_2dRenderer->end();
 }
 
+void Application2D::SceneSelect()
+{
+	switch (m_sceneID)
+	{
+	case 0:
+		Physics();
+		break;
+	case 1:
+		Rope(10);
+		break;
+	case 2:
+		// remove gravity for the below scenes
+		m_physicsScene->setGravity(glm::vec2(0, 0));
+		RotationDemo();
+		break;
+	case 3:
+		DVDPlayer();
+		break;
+	case 4:
+		Billiards();
+		break;
+	case 5:
+		Pong();
+		break;
+	case 6:
+		BubbleBobble();
+		break;
+	default:
+		break;
+	}
+}
+
 void Application2D::Physics()
 {
+	m_physicsScene->setGravity(glm::vec2(0, -70));
+
 	Sphere* ball1 = new Sphere(glm::vec2(-54, 0), glm::vec2(20, 17), 4.0f, 4, 0.8, glm::vec4(0, 1, 0, 1));	    
 	Sphere* ball2 = new Sphere(glm::vec2(58, 0), glm::vec2(-20, 15), 8.0f, 8, 0.8, glm::vec4(0, 1, 0, 1));	   
 	Sphere* ball3 = new Sphere(glm::vec2(0, 0), glm::vec2(0, 0), 4.0f, 4, 0.8, glm::vec4(0, 1, 0, 1));		    
@@ -343,6 +433,7 @@ void Application2D::Rope(int num)
 void Application2D::DVDPlayer()
 {
 	m_gameID = DVD;
+	setBackgroundColour(0, 0, 0, 1);
 
 	Sphere* ball1 = new Sphere(glm::vec2(0, 0), glm::vec2(20, 20), 4.0f, 4, 1, glm::vec4(0, 1, 0, 1));
 	ball1->setDrag(0);
@@ -423,6 +514,8 @@ void Application2D::Billiards()
 
 void Application2D::Pong()
 {
+	setBackgroundColour(0, 0, 0, 1);
+
 	m_gameID = PONG; 
 }
 
