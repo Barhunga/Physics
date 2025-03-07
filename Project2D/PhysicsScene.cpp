@@ -30,6 +30,13 @@ void PhysicsScene::removeActor(PhysicsObject* actor)
 	printf("\nActor not found in array when attempting remove\n");
 }
 
+PhysicsObject* PhysicsScene::getActor(int index)
+{
+	if (index < m_actors.size())
+		return m_actors[index];
+	return nullptr;
+}
+
 // define function pointer type with 2 object parameters
 typedef bool(*fn)(PhysicsObject*, PhysicsObject*);
 
@@ -88,6 +95,19 @@ void PhysicsScene::update(float dt)
 					// run function pointer
 					collisionFunctionPtr(object1, object2);
 				}
+			}
+		}
+		// zero out collision if kinematic
+		for (int index = 0; index < actorCount; index++)
+		{
+			RigidBody* actor = dynamic_cast<RigidBody*>(m_actors[index]);
+			if (actor != nullptr && actor->isKinematic())
+			{
+				//if (actor->isKinematic())
+				//{
+					actor->setVelocity(glm::vec2(0));
+					actor->setAngularVelocity(0);
+				//}
 			}
 		}
 	}

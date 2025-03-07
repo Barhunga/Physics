@@ -103,7 +103,7 @@ void Application2D::update(float deltaTime) {
 		break;
 
 	case BILLIARDS:
-		if (input->isKeyDown(aie::INPUT_KEY_LEFT))
+		if (input->isKeyDown(aie::INPUT_KEY_SPACE))
 		{
 			if (held == false )
 			{
@@ -171,14 +171,21 @@ void Application2D::update(float deltaTime) {
 		break;
 
 	default:
-		if (input->isKeyDown(aie::INPUT_KEY_UP))
-			m_physicsScene->getActor(19)->setVelocity(glm::vec2(0, 10));
-		else if (input->isKeyDown(aie::INPUT_KEY_DOWN))
-			m_physicsScene->getActor(19)->setVelocity(glm::vec2(0, -10));
-		else if (input->isKeyDown(aie::INPUT_KEY_LEFT))
-			m_physicsScene->getActor(19)->setVelocity(glm::vec2(-10, 0));
-		else if (input->isKeyDown(aie::INPUT_KEY_RIGHT))
-			m_physicsScene->getActor(19)->setVelocity(glm::vec2(10, 0));
+		RigidBody* actor = dynamic_cast<RigidBody*>(m_physicsScene->getActor(19));
+		if (actor != nullptr)
+		{
+			if (input->isKeyDown(aie::INPUT_KEY_UP))
+				actor->addVelocity(glm::vec2(0, 10));;
+			if (input->isKeyDown(aie::INPUT_KEY_DOWN))
+				actor->addVelocity(glm::vec2(0, -10));;
+			if (input->isKeyDown(aie::INPUT_KEY_LEFT))
+				actor->addVelocity(glm::vec2(-10, 0));
+			if (input->isKeyDown(aie::INPUT_KEY_RIGHT))
+				actor->addVelocity(glm::vec2(10, 0));;
+			// normalize the speed so diagonals work as intended and don't speed up
+			if(actor->getVelocity() != glm::vec2(0))
+				actor->setVelocity(glm::normalize(actor->getVelocity()) * 20.f);
+		}
 
 		//// Update the camera position using the arrow keys - camera stuff in sample but not tut
 		//float camPosX;
@@ -324,7 +331,7 @@ void Application2D::Rope(int num)
 			sphere->setKinematic(true);
 		m_physicsScene->addActor(sphere);
 		if (prev)
-			m_physicsScene->addActor(new Spring(sphere, prev, 500, 10, 7));
+			m_physicsScene->addActor(new Spring(sphere, prev, 1000, 10, 7));
 		prev = sphere;
 	}
 	// add a kinematic box at an angle for the rope to drape over

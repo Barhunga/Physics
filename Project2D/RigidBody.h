@@ -1,8 +1,8 @@
 #pragma once
 #include "PhysicsObject.h"
 
-#define MIN_LINEAR_THRESHOLD 1.5f
-#define MIN_ANGULAR_THRESHOLD 1.f
+#define MIN_LINEAR_THRESHOLD 3.f
+#define MIN_ANGULAR_THRESHOLD 2.1f
 
 class RigidBody : public PhysicsObject
 {
@@ -34,6 +34,8 @@ public:
     virtual float getEnergy() override;
 
     virtual void setVelocity(glm::vec2 velocity) override { m_velocity = velocity; }
+    void addVelocity(glm::vec2 velocity) { m_velocity += velocity; }
+    void setAngularVelocity(float angularVelocity) { m_angularVelocity = angularVelocity; }
     void setPosition(glm::vec2 pos) { m_position = pos; }
     void setDrag(float drag) { m_linearDrag = drag; m_angularDrag = drag; }
     void setKinematic(bool state) { m_isKinematic = state; }

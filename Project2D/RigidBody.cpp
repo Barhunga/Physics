@@ -13,7 +13,8 @@ void RigidBody::fixedUpdate(glm::vec2 gravity, float timeStep)
 	{
 		// allow for player control
 		m_position += m_velocity * timeStep;
-		// zero out movement before physics checks
+		m_orientation += m_angularVelocity * timeStep;
+		// zero out movement again after player control and before physics checks
 		m_velocity = glm::vec2(0);
 		m_angularVelocity = 0;
 		return;
@@ -24,10 +25,22 @@ void RigidBody::fixedUpdate(glm::vec2 gravity, float timeStep)
 	m_angularVelocity -= m_angularVelocity * m_angularDrag * timeStep; 
 
 	// stop movement if value is super low
-	if (length(m_velocity) < MIN_LINEAR_THRESHOLD) {
-		m_velocity = glm::vec2(0, 0); 
+	static int linearLenience = 0;
+	if (m_velocity != glm::vec2(0))
+	{
+		if (length(m_velocity) < MIN_LINEAR_THRESHOLD)
+		{
+			linearLenience++;
+			if (linearLenience >= 10)
+			{
+				m_velocity = glm::vec2(0, 0);
+				linearLenience = -100;
+			}
+		}
+		else linearLenience = 0;
 	}
-	if (abs(m_angularVelocity) < MIN_ANGULAR_THRESHOLD) {
+	if (abs(m_angularVelocity) < MIN_ANGULAR_THRESHOLD)
+	{
 		m_angularVelocity = 0;
 	}
 
@@ -80,20 +93,20 @@ void RigidBody::resolveCollision(RigidBody* actor2, glm::vec2 contact, glm::vec2
 
 		glm::vec2 force = (1.0f + elasticity) * mass1 * mass2 / (mass1 + mass2) * (v1 - v2) * normal;
 
-		//// check kinetic energy before collision
-		//float kePre = getKineticEnergy() + actor2->getKineticEnergy();
+		// check kinetic energy before collision
+		float kePre = getKineticEnergy() + actor2->getKineticEnergy();
 
 		applyForceToActor(actor2, force, contact);
 
 		//// check velocities after collision
 		//printf("%f %f, %f %f\n", m_velocity.x, m_velocity.y, actor2->m_velocity.x, actor2->m_velocity.y);
 
-		//// check kinetic energy again after collision to ensure it is preserved - remove after introducing variable elasticity
-		//float kePost = getKineticEnergy() + actor2->getKineticEnergy();
-		//float deltaKE = kePost - kePre;
-		////printf("Before: %f\nAfter: %f\n", kePre, kePost); // print total energy before and after collision
-		//if (deltaKE > kePost * 0.01f)
-		//	printf("Kinetic Energy discrepancy greater than 1%% detected!!\n");
+		// check kinetic energy again after collision to ensure it is preserved - remove after introducing variable elasticity
+		float kePost = getKineticEnergy() + actor2->getKineticEnergy();
+		float deltaKE = kePost - kePre;
+		//printf("Before: %f\nAfter: %f\n", kePre, kePost); // print total energy before and after collision
+		if (deltaKE > kePost * 0.01f)
+			printf("Kinetic Energy discrepancy greater than 1%% detected!!\n");
 	}
 	if (pen > 0) PhysicsScene::ApplyContactForces(this, actor2, normal, pen); 
 }
