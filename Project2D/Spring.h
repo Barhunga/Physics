@@ -9,8 +9,8 @@ public:
 		float springCoefficient, float damping, float restLength,
 		glm::vec2 contact1 = glm::vec2(0, 0), glm::vec2 contact2 = glm::vec2(0, 0)) :
 		m_body1(body1), m_body2(body2), m_springCoefficient(springCoefficient), m_damping(damping), m_restLength(restLength),
-		m_contact1(contact1), m_contact2(contact2), PhysicsObject(JOINT, 1) {
-	}
+		m_contact1(contact1), m_contact2(contact2), PhysicsObject(JOINT, 1) {}
+	// can also calculate the rest length based on the initial distance between the contact points
 	~Spring();
 
 	virtual void fixedUpdate(glm::vec2 gravity, float timeStep) override;

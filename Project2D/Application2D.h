@@ -7,12 +7,14 @@
 #include "Plane.h"
 #include "Box.h"
 #include "Spring.h"
+#include "SoftBody.h"
 
 enum GameType {
 	DVD = 1,
 	BILLIARDS,
 	PONG,
-	BUBBLEBOBBLE
+	BUBBLEBOBBLE,
+	DEFAULT
 };
 
 class Application2D : public aie::Application {

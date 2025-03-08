@@ -19,6 +19,13 @@ void Spring::fixedUpdate(glm::vec2 gravity, float timeStep)
 	glm::vec2 relativeVelocity = m_body2->getVelocity() - m_body1->getVelocity();
 	// F = -kX - bv
 	glm::vec2 force = direction * m_springCoefficient * (m_restLength - length) - m_damping * relativeVelocity;
+
+	// cap the spring force to 1000 N to prevent numerical instability - base this limit on the spring coefficient and rest length 
+	//const float threshold = 1000.0f;
+	//float forceMag = glm::length(force);
+	//if (forceMag > threshold)
+	//	force *= threshold / forceMag;
+
 	m_body1->applyForce(-force * timeStep, p1 - m_body1->getPosition()); 
 	m_body2->applyForce(force * timeStep, p2 - m_body2->getPosition()); 
 }

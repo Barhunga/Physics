@@ -289,6 +289,7 @@ void Application2D::draw() {
 
 	// display controls
 	m_2dRenderer->setRenderColour(0, 1, 0, 1); // green
+	std::string controls;
 	switch (m_sceneID)
 	{
 		case 0:
@@ -296,18 +297,18 @@ void Application2D::draw() {
 			break;
 		case 1:
 			// Rope
-			m_2dRenderer->drawText(m_font, "UP/DOWN/LEFT/RIGHT - Move Box", 0, 720 - 710);
+			controls = "UP/DOWN/LEFT/RIGHT - Move Box";
 			break;
 		case 2:
 			// Rotation
 			break;
 		case 3:
 			// DVD
-			m_2dRenderer->drawText(m_font, "UP/DOWN - Change Speed | BACKSPACE - Reverse | LEFT/RIGHT - Move Wall", 0, 720 - 710);
+			controls = "UP/DOWN - Change Speed | BACKSPACE - Reverse | LEFT/RIGHT - Move Wall";
 			break;
 		case 4:
 			// Billiards
-			m_2dRenderer->drawText(m_font, "SPACE - Take Shot", 0, 720 - 710);
+			controls = "SPACE - Take Shot";
 			break;
 		case 5:
 			// Pong
@@ -320,6 +321,8 @@ void Application2D::draw() {
 		default:
 			break;
 	}
+	if (controls.length() > 0)
+		m_2dRenderer->drawText(m_font, controls.c_str(), 0, 720 - 710);
 
 	// done drawing sprites
 	m_2dRenderer->end();
@@ -359,6 +362,7 @@ void Application2D::SceneSelect()
 
 void Application2D::Physics()
 {
+	m_gameID = DEFAULT;
 	m_physicsScene->setGravity(glm::vec2(0, -70));
 
 	Sphere* ball1 = new Sphere(glm::vec2(-54, 0), glm::vec2(20, 17), 4.0f, 4, 0.8, glm::vec4(0, 1, 0, 1));	    
@@ -388,6 +392,8 @@ void Application2D::Physics()
 
 void Application2D::RotationDemo()
 {
+	m_gameID = DEFAULT;
+
 	Sphere* ballYellow = new Sphere(glm::vec2(-30, 30), glm::vec2(30, 0), 1.f, 2, 1, glm::vec4(1, 1, 0, 1));
 	Sphere* ballWhite = new Sphere(glm::vec2(-30, -2), glm::vec2(30, 0), 1.f, 2, 1, glm::vec4(1, 1, 1, 1));
 	Sphere* ballGreen = new Sphere(glm::vec2(-30, -34), glm::vec2(30, 0), 1.f, 2, 1, glm::vec4(0, 1, 0, 1));
@@ -411,6 +417,7 @@ void Application2D::RotationDemo()
 
 void Application2D::Rope(int num)
 {
+	m_gameID = DEFAULT;
 	m_physicsScene->setGravity(glm::vec2(0, -9.82f));
 	Sphere* prev = nullptr;
 	for (int i = 0; i < num; i++)
@@ -428,6 +435,32 @@ void Application2D::Rope(int num)
 	Box* box = new Box(glm::vec2(0, -20), glm::vec2(0), 20, 8, 2, 0.3f, 1, glm::vec4(0, 0, 1, 1));
 	box->setKinematic(true);
 	m_physicsScene->addActor(box);
+
+	Plane* plane1 = new Plane(glm::vec2(-1, 0), -90, 0.6, glm::vec4(0, 0, 1, 1));
+	Plane* plane2 = new Plane(glm::vec2(1, 0), -90, 0.6, glm::vec4(0, 0, 1, 1));
+	Plane* plane3 = new Plane(glm::vec2(0, 1), -45, 0.6, glm::vec4(0, 0, 1, 1));
+	m_physicsScene->addActor(plane1);
+	m_physicsScene->addActor(plane2);
+	m_physicsScene->addActor(plane3);
+
+	// softbodies
+	std::vector<std::string> sb;
+	sb.push_back("000000");
+	sb.push_back("000000");
+	sb.push_back("00....");
+	sb.push_back("00....");
+	sb.push_back("000000");
+	sb.push_back("000000");
+	SoftBody::Build(m_physicsScene, glm::vec2(-50, 0), 5.0f, 1000, 10.0f, sb);
+
+	std::vector<std::string> sb2;
+	sb2.push_back("..00..");
+	sb2.push_back(".0000.");
+	sb2.push_back("00..00");
+	sb2.push_back("000000");
+	sb2.push_back("00..00");
+	sb2.push_back("00..00");
+	SoftBody::Build(m_physicsScene, glm::vec2(50, 0), 5.0f, 1000, 10.0f, sb2);
 }
 
 void Application2D::DVDPlayer()
@@ -489,16 +522,16 @@ void Application2D::Billiards()
 	m_physicsScene->addActor(pocket6);
 
 	Sphere* cueBall = new Sphere(glm::vec2(54, 0),  glm::vec2(0, 0), 170.0f, 4, 0.8, glm::vec4(1, 1, 1, 1));
-	Sphere* ball1 = new Sphere(glm::vec2(-44, 0),   glm::vec2(0, 0), 160.0f, 4, 0.8, glm::vec4(1, 1, 0, 1));
-	Sphere* ball2 = new Sphere(glm::vec2(-51, -4),  glm::vec2(0, 0), 160.0f, 4, 0.8, glm::vec4(0, 0, 1, 1));
-	Sphere* ball3 = new Sphere(glm::vec2(-51, 4),   glm::vec2(0, 0), 160.0f, 4, 0.8, glm::vec4(1, 0, 0, 1));
-	Sphere* ball4 = new Sphere(glm::vec2(-58, -8),  glm::vec2(0, 0), 160.0f, 4, 0.8, glm::vec4(0.53, 0, 0.68, 1));
-	Sphere* ball8 = new Sphere(glm::vec2(-58, 0),   glm::vec2(0, 0), 160.0f, 4, 0.8, glm::vec4(0, 0, 0, 1));
-	Sphere* ball5 = new Sphere(glm::vec2(-58, 8),   glm::vec2(0, 0), 160.0f, 4, 0.8, glm::vec4(1, 0.39, 0, 1));
-	Sphere* ball6 = new Sphere(glm::vec2(-65, -12), glm::vec2(0, 0), 160.0f, 4, 0.8, glm::vec4(0, 0.57, 0.27, 1));
-	Sphere* ball7 = new Sphere(glm::vec2(-65, -4),  glm::vec2(0, 0), 160.0f, 4, 0.8, glm::vec4(0.64, 0.25, 0.17, 1));
-	Sphere* ball9 = new Sphere(glm::vec2(-65, 4),   glm::vec2(0, 0), 160.0f, 4, 0.8, glm::vec4(1, 1, 0.5, 1));		 
-	Sphere* ball10 = new Sphere(glm::vec2(-65, 12), glm::vec2(0, 0), 160.0f, 4, 0.8, glm::vec4(0.5, 0.5, 1, 1));		 
+	Sphere* ball1 = new Sphere(glm::vec2(-34, 0),   glm::vec2(0, 0), 160.0f, 4, 0.8, glm::vec4(1, 1, 0, 1));
+	Sphere* ball2 = new Sphere(glm::vec2(-41, -4),  glm::vec2(0, 0), 160.0f, 4, 0.8, glm::vec4(0, 0, 1, 1));
+	Sphere* ball3 = new Sphere(glm::vec2(-41, 4),   glm::vec2(0, 0), 160.0f, 4, 0.8, glm::vec4(1, 0, 0, 1));
+	Sphere* ball4 = new Sphere(glm::vec2(-48, -8),  glm::vec2(0, 0), 160.0f, 4, 0.8, glm::vec4(0.53, 0, 0.68, 1));
+	Sphere* ball8 = new Sphere(glm::vec2(-48, 0),   glm::vec2(0, 0), 160.0f, 4, 0.8, glm::vec4(0, 0, 0, 1));
+	Sphere* ball5 = new Sphere(glm::vec2(-48, 8),   glm::vec2(0, 0), 160.0f, 4, 0.8, glm::vec4(1, 0.39, 0, 1));
+	Sphere* ball6 = new Sphere(glm::vec2(-55, -12), glm::vec2(0, 0), 160.0f, 4, 0.8, glm::vec4(0, 0.57, 0.27, 1));
+	Sphere* ball7 = new Sphere(glm::vec2(-55, -4),  glm::vec2(0, 0), 160.0f, 4, 0.8, glm::vec4(0.64, 0.25, 0.17, 1));
+	Sphere* ball9 = new Sphere(glm::vec2(-55, 4),   glm::vec2(0, 0), 160.0f, 4, 0.8, glm::vec4(1, 1, 0.5, 1));		 
+	Sphere* ball10 = new Sphere(glm::vec2(-55, 12), glm::vec2(0, 0), 160.0f, 4, 0.8, glm::vec4(0.5, 0.5, 1, 1));		 
 	m_physicsScene->addActor(cueBall);		  
 	m_physicsScene->addActor(ball1);
 	m_physicsScene->addActor(ball2);		  
@@ -514,12 +547,13 @@ void Application2D::Billiards()
 
 void Application2D::Pong()
 {
+	m_gameID = PONG; 
 	setBackgroundColour(0, 0, 0, 1);
 
-	m_gameID = PONG; 
 }
 
 void Application2D::BubbleBobble()
 {
 	m_gameID = BUBBLEBOBBLE; 
+
 }
