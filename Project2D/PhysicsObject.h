@@ -29,5 +29,7 @@ public:
     float getElasticity() { return m_elasticity; }
 
     virtual void setVelocity(glm::vec2 velocity) {};
+
+    virtual bool IsInside(glm::vec2 point) { return false; }
 };
 

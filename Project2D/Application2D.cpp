@@ -5,6 +5,12 @@
 #include "Gizmos.h"
 
 glm::vec2 PhysicsScene::m_gravity = glm::vec2(0, -70); 
+const float extents = 100;
+const float aspectRatio = 16.0f / 9.0f;
+static bool kinematicToggle = false;
+static bool canShoot = true;
+static float power;
+float powerCap = 400;
 
 Application2D::Application2D() {
 
@@ -46,40 +52,34 @@ void Application2D::shutdown() {
 void Application2D::update(float deltaTime) {
 
 	m_timer += deltaTime;
+	aie::Gizmos::clear();
 
 	// input example
 	aie::Input* input = aie::Input::getInstance();
-	static bool held = false;
-	static bool canShoot = true;
+	static int xScreen, yScreen;
+	// get mouse position
+	input->getMouseXY(&xScreen, &yScreen);
+	glm::vec2 mousePos = screenToWorld(glm::vec2(xScreen, yScreen));
 
 	// handle inputs
 	switch (m_gameID) 
 	{
 	case DVD:
-		if (input->isKeyDown(aie::INPUT_KEY_DOWN)) {
-			if (held == false)
-			{
-				if(length(m_physicsScene->getActor(0)->getVelocity()) >= 6) // make sure it doesnt reach the lower threshold
-					m_physicsScene->getActor(0)->setVelocity(glm::vec2(m_physicsScene->getActor(0)->getVelocity().x / 2,
-						m_physicsScene->getActor(0)->getVelocity().y / 2));
-				held = true;
-			}
+		if (input->wasKeyPressed(aie::INPUT_KEY_DOWN)) 
+		{
+			if(length(m_physicsScene->getActor(0)->getVelocity()) >= 6) // make sure it doesnt reach the lower threshold
+				m_physicsScene->getActor(0)->setVelocity(glm::vec2(m_physicsScene->getActor(0)->getVelocity().x / 2,
+					m_physicsScene->getActor(0)->getVelocity().y / 2));
 		}
-		else if (input->isKeyDown(aie::INPUT_KEY_UP)) {
-			if (held == false)
-			{
-				m_physicsScene->getActor(0)->setVelocity(glm::vec2(m_physicsScene->getActor(0)->getVelocity().x * 2,
-					m_physicsScene->getActor(0)->getVelocity().y * 2));
-				held = true;
-			}
+		else if (input->wasKeyPressed(aie::INPUT_KEY_UP)) 
+		{
+			m_physicsScene->getActor(0)->setVelocity(glm::vec2(m_physicsScene->getActor(0)->getVelocity().x * 2,
+				m_physicsScene->getActor(0)->getVelocity().y * 2));
 		}
-		else if (input->isKeyDown(aie::INPUT_KEY_BACKSPACE)) {
-			if (held == false)
-			{
-				m_physicsScene->getActor(0)->setVelocity(glm::vec2(-m_physicsScene->getActor(0)->getVelocity().x,
-					-m_physicsScene->getActor(0)->getVelocity().y));
-				held = true;
-			}
+		else if (input->wasKeyPressed(aie::INPUT_KEY_BACKSPACE)) 
+		{
+			m_physicsScene->getActor(0)->setVelocity(glm::vec2(-m_physicsScene->getActor(0)->getVelocity().x,
+				-m_physicsScene->getActor(0)->getVelocity().y));
 		}
 		else if (input->isKeyDown(aie::INPUT_KEY_LEFT))
 		{
@@ -91,38 +91,46 @@ void Application2D::update(float deltaTime) {
 			Plane* plane = dynamic_cast<Plane*>(m_physicsScene->getActor(1));
 			plane->setDistance(plane->getDistance() - 0.1);
 		}
-		else held = false;
 		break;
 
 	case BILLIARDS:
-		if (input->isKeyDown(aie::INPUT_KEY_SPACE))
+		if (canShoot == true)
 		{
-			if (canShoot == true)
+			Sphere* cueBall = dynamic_cast<Sphere*>(m_physicsScene->getActor(10)); 
+			if (cueBall != nullptr)
 			{
-				m_physicsScene->getActor(10)->setVelocity(glm::vec2(-500, 0));
-				canShoot = false;
+				glm::vec2 direction = glm::normalize(cueBall->getPosition() - mousePos);
+				power = glm::length(cueBall->getPosition() - mousePos) * 10.f;
+				// cap the power
+				if (power > powerCap) power = powerCap;
+				
+				aie::Gizmos::add2DLine(power != powerCap ? mousePos : cueBall->getPosition() - (direction * powerCap / 10.f), 
+					power != powerCap ? mousePos - direction * 40.f : cueBall->getPosition() - (direction * (powerCap / 10.f + 40.f)), 
+					glm::vec4(1, 0, 1, 1));
+
+				if (input->wasMouseButtonPressed(aie::INPUT_MOUSE_BUTTON_LEFT))
+				{
+					cueBall->setVelocity(direction * power);
+					canShoot = false;
+				}
 			}
 		}
 		else 
 		{
-			// only do calculations if we need to
-			if (!canShoot)
+			// check all objects to see if they are moving
+			for (size_t i = 10; i < m_physicsScene->getActorCount(); i++)
 			{
-				// check all objects to see if they are moving
-				for (size_t i = 10; i < m_physicsScene->getActorCount(); i++)
+				if (m_physicsScene->getActor(i)->getVelocity() != glm::vec2(0, 0))
 				{
-					if (m_physicsScene->getActor(i)->getVelocity() != glm::vec2(0, 0))
-					{
-						// exit early if object is moving
-						break;
-					}
-					// if we've made it to the end of the loop and all have been still, allow us to take our next shot
-					else if (i == m_physicsScene->getActorCount() - 1)
-					{
-						Sphere* cueBall = dynamic_cast<Sphere*>(m_physicsScene->getActor(10));
-						if (cueBall->getPosition().x == 200) cueBall->setPosition(glm::vec2(54, 0));
-						canShoot = true;
-					}
+					// exit early if object is moving
+					break;
+				}
+				// if we've made it to the end of the loop and all have been still, allow us to take our next shot
+				else if (i == m_physicsScene->getActorCount() - 1)
+				{
+					Sphere* cueBall = dynamic_cast<Sphere*>(m_physicsScene->getActor(10));
+					if (cueBall->getPosition().x == 200) cueBall->setPosition(glm::vec2(54, 0));
+					canShoot = true;
 				}
 			}
 		}
@@ -162,21 +170,110 @@ void Application2D::update(float deltaTime) {
 
 		break;
 
-	default:
-		RigidBody* actor = dynamic_cast<RigidBody*>(m_physicsScene->getActor(19));
-		if (actor != nullptr)
+	case FREEPLAY:
+		static bool held0;
+		static bool held1;
+		static RigidBody* object;
+
+		// right click - spawns spheres when released
+		if (!held0)
 		{
-			if (input->isKeyDown(aie::INPUT_KEY_UP))
-				actor->addVelocity(glm::vec2(0, 10));;
-			if (input->isKeyDown(aie::INPUT_KEY_DOWN))
-				actor->addVelocity(glm::vec2(0, -10));;
-			if (input->isKeyDown(aie::INPUT_KEY_LEFT))
-				actor->addVelocity(glm::vec2(-10, 0));
-			if (input->isKeyDown(aie::INPUT_KEY_RIGHT))
-				actor->addVelocity(glm::vec2(10, 0));;
-			// normalize the speed so diagonals work as intended and don't speed up
-			if(actor->getVelocity() != glm::vec2(0))
-				actor->setVelocity(glm::normalize(actor->getVelocity()) * 20.f);
+			glm::vec4 colour;
+			kinematicToggle ? colour = glm::vec4(1, 1, 0, 1) : colour = glm::vec4(0, 1, 1, 1);
+			if (input->isMouseButtonDown(aie::INPUT_MOUSE_BUTTON_RIGHT))
+			{
+				held1 = true;
+				aie::Gizmos::add2DCircle(mousePos, 5, 32, colour);
+			}
+			else if (input->wasMouseButtonReleased(aie::INPUT_MOUSE_BUTTON_RIGHT))
+			{
+				object = new Sphere(screenToWorld(glm::vec2(xScreen, yScreen)), glm::vec2(0), 1, 4, 0.8, colour);
+				if (kinematicToggle)
+					object->setKinematic(true);
+				m_physicsScene->addActor(object);
+				object = nullptr;
+			}
+		}
+
+		// left click - drags objects
+		static bool swapped;
+		if (!held1)
+		{
+			if (input->isMouseButtonDown(aie::INPUT_MOUSE_BUTTON_LEFT))
+			{
+				held0 = true;
+				if (object == nullptr)
+				{
+					object = dynamic_cast<RigidBody*>(getHoveredObject(mousePos));
+					if (object != nullptr)
+					{
+						if (!object->isKinematic())
+						{
+							object->setKinematic(true);
+							swapped = true;
+						}
+					}
+				}
+				if (object != nullptr)
+					object->setPosition(mousePos);
+			}
+			else if (input->wasMouseButtonReleased(aie::INPUT_MOUSE_BUTTON_LEFT))
+			{
+				if (object != nullptr)
+				{
+					if (swapped)
+						object->setKinematic(false);
+					swapped = false;
+					object = nullptr;
+				}
+			}
+		}
+
+		// middle click - removes objects
+		if (!held1)
+		{
+			if (input->wasMouseButtonPressed(aie::INPUT_MOUSE_BUTTON_MIDDLE))
+			{
+				object = dynamic_cast<RigidBody*>(getHoveredObject(mousePos));
+				if (object != nullptr)
+				{
+					m_physicsScene->removeActor(object);
+					swapped = false;
+					object = nullptr;
+				}
+			}
+		}
+
+		// scroll wheel - toggle kinematic flag for spawns
+		static float lastScroll;
+		if (input->getMouseScroll() > lastScroll) 
+			kinematicToggle = true;		
+		if (input->getMouseScroll() < lastScroll) 
+			kinematicToggle = false;
+		lastScroll = input->getMouseScroll(); 
+
+		if (!input->isMouseButtonDown(aie::INPUT_MOUSE_BUTTON_LEFT)) held0 = false;
+		if (!input->isMouseButtonDown(aie::INPUT_MOUSE_BUTTON_RIGHT)) held1 = false;
+		break;
+
+	default:
+		if (m_sceneID == 1)
+		{
+			RigidBody* actor = dynamic_cast<RigidBody*>(m_physicsScene->getActor(19));
+			if (actor != nullptr)
+			{
+				if (input->isKeyDown(aie::INPUT_KEY_UP))
+					actor->addVelocity(glm::vec2(0, 10));;
+				if (input->isKeyDown(aie::INPUT_KEY_DOWN))
+					actor->addVelocity(glm::vec2(0, -10));;
+				if (input->isKeyDown(aie::INPUT_KEY_LEFT))
+					actor->addVelocity(glm::vec2(-10, 0));
+				if (input->isKeyDown(aie::INPUT_KEY_RIGHT))
+					actor->addVelocity(glm::vec2(10, 0));;
+				// normalize the speed so diagonals work as intended and don't speed up
+				if (actor->getVelocity() != glm::vec2(0))
+					actor->setVelocity(glm::normalize(actor->getVelocity()) * 20.f);
+			}
 		}
 
 		//// Update the camera position using the arrow keys - camera stuff in sample but not tut
@@ -199,7 +296,6 @@ void Application2D::update(float deltaTime) {
 		//m_2dRenderer->setCameraPos(camPosX, camPosY);
 	}
 
-	aie::Gizmos::clear();
 	m_physicsScene->update(deltaTime);
 	m_physicsScene->draw();
 
@@ -210,7 +306,7 @@ void Application2D::update(float deltaTime) {
 	if (switching == false && input->isKeyDown(aie::INPUT_KEY_EQUAL))
 	{
 		switching = true;
-		if (m_sceneID < 6)
+		if (m_sceneID < 7)
 		{
 			while (m_physicsScene->getActorCount() > 0)
 			{
@@ -276,8 +372,7 @@ void Application2D::draw() {
 	////
 
 	// draw your stuff here!
-	static float aspectRatio = 16 / 9.f;
-	aie::Gizmos::draw2D(glm::ortho<float>(-100, 100, -100 / aspectRatio, 100 / aspectRatio, -1.0f, 1.0f));
+	aie::Gizmos::draw2D(glm::ortho<float>(-extents, extents, -extents / aspectRatio, extents / aspectRatio, -1.0f, 1.0f)); 
 	
 	// output some text
 	m_2dRenderer->setRenderColour(0, 1, 0, 1); // green
@@ -290,6 +385,7 @@ void Application2D::draw() {
 	// display controls
 	m_2dRenderer->setRenderColour(0, 1, 0, 1); // green
 	std::string controls;
+	std::string controls2;
 	switch (m_sceneID)
 	{
 		case 0:
@@ -308,7 +404,17 @@ void Application2D::draw() {
 			break;
 		case 4:
 			// Billiards
-			controls = "SPACE - Take Shot";
+			if (canShoot)
+			{
+				controls = "LEFT CLICK - Take Shot | Power [";
+				for (int i = 0; i < 10; i++) {
+					if (power / (powerCap / 10) > i)
+						controls += "|";
+					else
+						controls += ".";
+				}
+				controls += "]";
+			}
 			break;
 		case 5:
 			// Pong
@@ -318,14 +424,51 @@ void Application2D::draw() {
 			// BubbleBobble
 
 			break;
+		case 7:
+			// FreePlay
+
+			if (kinematicToggle)
+			{
+				controls2 = "RIGHT CLICK - Spawn object | LEFT CLICK - Drag object";
+				controls = "MIDDLE CLICK - Remove object | SCROLL - Kinematic spawn (TRUE)";
+			}
+			else
+			{
+				controls2 = "RIGHT CLICK - Spawn object | LEFT CLICK - Drag object";
+				controls = "MIDDLE CLICK - Remove object | SCROLL - Kinematic spawn (FALSE)";
+			}
 		default:
 			break;
 	}
 	if (controls.length() > 0)
 		m_2dRenderer->drawText(m_font, controls.c_str(), 0, 720 - 710);
+	if (controls2.length() > 0)
+		m_2dRenderer->drawText(m_font, controls2.c_str(), 0, 720 - 710 + 32);
 
 	// done drawing sprites
 	m_2dRenderer->end();
+}
+
+glm::vec2 Application2D::screenToWorld(glm::vec2 screenPos)
+{
+	glm::vec2 worldPos = screenPos;
+	// move the centre of the screen to (0,0)
+	worldPos.x -= getWindowWidth() / 2;
+	worldPos.y -= getWindowHeight() / 2;
+	// scale according to our extents
+	worldPos.x *= 2.0f * extents / getWindowWidth();
+	worldPos.y *= 2.0f * extents / (aspectRatio * getWindowHeight());
+	return worldPos;
+}
+
+PhysicsObject* Application2D::getHoveredObject(glm::vec2 mousePos)
+{
+	for (int i = 0; i < m_physicsScene->getActorCount(); i++)
+	{
+		if (m_physicsScene->getActor(i)->IsInside(mousePos))
+			return m_physicsScene->getActor(i);
+	}
+	return nullptr;
 }
 
 void Application2D::SceneSelect()
@@ -353,7 +496,11 @@ void Application2D::SceneSelect()
 		Pong();
 		break;
 	case 6:
+		m_physicsScene->setGravity(glm::vec2(0, 0));
 		BubbleBobble();
+		break;
+	case 7:
+		FreePlay();
 		break;
 	default:
 		break;
@@ -556,4 +703,17 @@ void Application2D::BubbleBobble()
 {
 	m_gameID = BUBBLEBOBBLE; 
 
+}
+
+void Application2D::FreePlay()
+{
+	m_gameID = FREEPLAY;
+	m_physicsScene->setGravity(glm::vec2(0, -70));
+
+	Plane* plane1 = new Plane(glm::vec2(-1, 0), -85, 0.6, glm::vec4(0, 0, 1, 1));
+	Plane* plane2 = new Plane(glm::vec2(1, 0), -85, 0.6, glm::vec4(0, 0, 1, 1));
+	Plane* plane3 = new Plane(glm::vec2(0, 1), -40, 0.6, glm::vec4(0, 0, 1, 1));
+	m_physicsScene->addActor(plane1);
+	m_physicsScene->addActor(plane2);
+	m_physicsScene->addActor(plane3);
 }

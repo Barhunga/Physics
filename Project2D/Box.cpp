@@ -4,8 +4,7 @@ void Box::draw()
 {
 	// if only using rotation
 	// glm::mat4 transform = glm::rotate(m_rotation, glm::vec3(0, 0, 1));
-	// aie::Gizmos::add2DAABBFilled(getCenter(),
-	// m_extents, m_colour, &transform);
+	// aie::Gizmos::add2DAABBFilled(getCenter(), m_extents, m_colour, &transform);
 	// draw using local axes
 	glm::vec2 p1 = m_position - m_localX * m_extents.x - m_localY * m_extents.y;
 	glm::vec2 p2 = m_position + m_localX * m_extents.x - m_localY * m_extents.y;

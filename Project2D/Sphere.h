@@ -17,6 +17,8 @@ public:
     bool getIsHole() { return isHole; }
     void setIsHole(bool state) { isHole = state; }
 
+    virtual bool IsInside(glm::vec2 point) override { return glm::distance(point, m_position) <= m_radius; }
+
 protected:
     float m_radius;
     glm::vec4 m_colour;

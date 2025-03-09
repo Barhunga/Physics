@@ -14,6 +14,7 @@ enum GameType {
 	BILLIARDS,
 	PONG,
 	BUBBLEBOBBLE,
+	FREEPLAY,
 	DEFAULT
 };
 
@@ -29,6 +30,9 @@ public:
 	virtual void update(float deltaTime);
 	virtual void draw();
 
+	glm::vec2 screenToWorld(glm::vec2 screenPos);
+	PhysicsObject* getHoveredObject(glm::vec2 mousePos);
+
 	void SceneSelect();
 
 	void Physics();
@@ -38,6 +42,7 @@ public:
 	void Billiards();
 	void Pong();
 	void BubbleBobble();
+	void FreePlay();
 
 protected:
 
