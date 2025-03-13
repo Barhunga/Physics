@@ -1,5 +1,6 @@
 #pragma once
 #include "PhysicsObject.h"
+#include <functional>
 
 #define MIN_LINEAR_THRESHOLD 3.f
 #define MIN_ANGULAR_THRESHOLD 1.9f
@@ -40,7 +41,8 @@ public:
     void setDrag(float drag) { m_linearDrag = drag; m_angularDrag = drag; }
     void setKinematic(bool state) { m_isKinematic = state; }
 
-    glm::vec2 toWorld(glm::vec2 contact) { return m_position + (m_localX * contact.x) + (m_localY * contact.y); } // who knows if this is correct
+    glm::vec2 toWorld(glm::vec2 contact) { return m_position + (m_localX * contact.x) + (m_localY * contact.y); } 
+    std::function<void(PhysicsObject*)> collisionCallback;
 
 protected:
     glm::vec2 m_position;

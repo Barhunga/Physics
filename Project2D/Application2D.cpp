@@ -56,8 +56,8 @@ void Application2D::update(float deltaTime) {
 
 	// input example
 	aie::Input* input = aie::Input::getInstance();
-	static int xScreen, yScreen;
 	// get mouse position
+	static int xScreen, yScreen;
 	input->getMouseXY(&xScreen, &yScreen);
 	glm::vec2 mousePos = screenToWorld(glm::vec2(xScreen, yScreen));
 
@@ -163,11 +163,21 @@ void Application2D::update(float deltaTime) {
 		break;
 
 	case PONG:
-
+		if (input->isKeyDown(aie::INPUT_KEY_UP))
+			m_physicsScene->getActor(1)->setVelocity(glm::vec2(0, 100));
+		if(input->isKeyDown(aie::INPUT_KEY_DOWN))
+			m_physicsScene->getActor(1)->setVelocity(glm::vec2(0, -100));
+		if(input->isKeyDown(aie::INPUT_KEY_W))
+			m_physicsScene->getActor(0)->setVelocity(glm::vec2(0, 100));
+		if(input->isKeyDown(aie::INPUT_KEY_S))
+			m_physicsScene->getActor(0)->setVelocity(glm::vec2(0, -100));
 		break;
 
 	case BUBBLEBOBBLE:
-
+		if (input->isKeyDown(aie::INPUT_KEY_LEFT))
+			m_physicsScene->getActor(0)->setVelocity(glm::vec2(-50, 0));
+		if (input->isKeyDown(aie::INPUT_KEY_RIGHT))
+			m_physicsScene->getActor(0)->setVelocity(glm::vec2(50, 0));
 		break;
 
 	case FREEPLAY:
@@ -418,11 +428,11 @@ void Application2D::draw() {
 			break;
 		case 5:
 			// Pong
-
+			controls = "PLAYER 1 MOVE: W/S  -  PLAYER 2 MOVE: UP/DOWN";
 			break;
 		case 6:
 			// BubbleBobble
-
+			controls = "LEFT/RIGHT - Move";
 			break;
 		case 7:
 			// FreePlay
@@ -512,14 +522,14 @@ void Application2D::Physics()
 	m_gameID = DEFAULT;
 	m_physicsScene->setGravity(glm::vec2(0, -70));
 
-	Sphere* ball1 = new Sphere(glm::vec2(-54, 0), glm::vec2(20, 17), 4.0f, 4, 0.8, glm::vec4(0, 1, 0, 1));	    
-	Sphere* ball2 = new Sphere(glm::vec2(58, 0), glm::vec2(-20, 15), 8.0f, 8, 0.8, glm::vec4(0, 1, 0, 1));	   
-	Sphere* ball3 = new Sphere(glm::vec2(0, 0), glm::vec2(0, 0), 4.0f, 4, 0.8, glm::vec4(0, 1, 0, 1));		    
-	Sphere* ball4 = new Sphere(glm::vec2(10, 0), glm::vec2(0, 0), 4.0f, 4, 0.8, glm::vec4(0, 1, 0, 1));		
-	ball4->setKinematic(true);
-	Box* box1 = new Box(glm::vec2(-20, 10), glm::vec2(20, 20), 4.0f, 2, 4, 0, 0.8, glm::vec4(0, 1, 0, 1));		   
-	Box* box2 = new Box(glm::vec2(-40, 10), glm::vec2(0, 60), 4.0f, 2, 4, 1, 0.8, glm::vec4(0, 1, 0, 1));		    
-	Box* box3 = new Box(glm::vec2(-40, -20), glm::vec2(0, 60), 4.0f, 2, 4, 1, 0.8, glm::vec4(0, 1, 0, 1));		
+	Sphere* ball1 = new Sphere(glm::vec2(-54, 0), glm::vec2(20, 17), 4.0f, 4, 0.8, glm::vec4(1, 0.5, 1, 1));	    
+	Sphere* ball2 = new Sphere(glm::vec2(58, 0), glm::vec2(-20, 15), 8.0f, 8, 0.8, glm::vec4(1, 0.5, 1, 1));	   
+	Sphere* ball3 = new Sphere(glm::vec2(0, 0), glm::vec2(0, 0), 4.0f, 4, 0.8,     glm::vec4(1, 0.5, 1, 1));		    
+	Sphere* ball4 = new Sphere(glm::vec2(10, 0), glm::vec2(0, 0), 4.0f, 4, 0.8,    glm::vec4(1, 0.5, 1, 1));		
+	ball4->setKinematic(true);																
+	Box* box1 = new Box(glm::vec2(-20, 10), glm::vec2(20, 20), 4.0f, 2, 4, 0, 0.8, glm::vec4(1, 0.5, 1, 1));		   
+	Box* box2 = new Box(glm::vec2(-40, 10), glm::vec2(0, 60), 4.0f, 2, 4, 1, 0.8,  glm::vec4(1, 0.5, 1, 1));		    
+	Box* box3 = new Box(glm::vec2(-40, -20), glm::vec2(0, 60), 4.0f, 2, 4, 1, 0.8, glm::vec4(1, 0.5, 1, 1));		
 	box3->setKinematic(true); 
 	m_physicsScene->addActor(ball1);																	   
 	m_physicsScene->addActor(ball2);																	   
@@ -529,9 +539,9 @@ void Application2D::Physics()
 	m_physicsScene->addActor(box2);			 															   
 	m_physicsScene->addActor(box3);																		   
 																										   
-	Plane* plane1 = new Plane(glm::vec2(-1, 0), -85, 0.6, glm::vec4(0, 0, 1, 1));							   
-	Plane* plane2 = new Plane(glm::vec2(1, 0), -85, 0.6, glm::vec4(0, 0, 1, 1));								   
-	Plane* plane3 = new Plane(glm::vec2(0, 1), -40, 0.6, glm::vec4(0, 0, 1, 1));								   
+	Plane* plane1 = new Plane(glm::vec2(-1, 0), -85, 0.6, glm::vec4(0.53, 0, 0.68, 1));
+	Plane* plane2 = new Plane(glm::vec2(1, 0), -85, 0.6, glm::vec4(0.53, 0, 0.68, 1));
+	Plane* plane3 = new Plane(glm::vec2(0, 1), -40, 0.6, glm::vec4(0.53, 0, 0.68, 1));
 	m_physicsScene->addActor(plane1);																	   
 	m_physicsScene->addActor(plane2);																	   
 	m_physicsScene->addActor(plane3);																	   
@@ -583,9 +593,9 @@ void Application2D::Rope(int num)
 	box->setKinematic(true);
 	m_physicsScene->addActor(box);
 
-	Plane* plane1 = new Plane(glm::vec2(-1, 0), -90, 0.6, glm::vec4(0, 0, 1, 1));
-	Plane* plane2 = new Plane(glm::vec2(1, 0), -90, 0.6, glm::vec4(0, 0, 1, 1));
-	Plane* plane3 = new Plane(glm::vec2(0, 1), -45, 0.6, glm::vec4(0, 0, 1, 1));
+	Plane* plane1 = new Plane(glm::vec2(-1, 0), -90, 0.6, glm::vec4(1, 0.5, 0, 1));
+	Plane* plane2 = new Plane(glm::vec2(1, 0), -90, 0.6, glm::vec4(1, 0.5, 0, 1));
+	Plane* plane3 = new Plane(glm::vec2(0, 1), -45, 0.6, glm::vec4(1, 0.5, 0, 1));
 	m_physicsScene->addActor(plane1);
 	m_physicsScene->addActor(plane2);
 	m_physicsScene->addActor(plane3);
@@ -697,12 +707,79 @@ void Application2D::Pong()
 	m_gameID = PONG; 
 	setBackgroundColour(0, 0, 0, 1);
 
+	Box* player1 = new Box(glm::vec2(-60, 0), glm::vec2(0), 1, 2, 10, 0, 1, glm::vec4(1, 1, 1, 1));
+	Box* player2 = new Box(glm::vec2( 60, 0), glm::vec2(0), 1, 2, 10, 0, 1, glm::vec4(1, 1, 1, 1));
+	player1->setKinematic(true);
+	player2->setKinematic(true);
+	m_physicsScene->addActor(player1);
+	m_physicsScene->addActor(player2);
+
+	Plane* top = new Plane(glm::vec2(0, -1), -40, 1, glm::vec4(1, 1, 1, 0.1));
+	Plane* left = new Plane(glm::vec2(1, 0), -85, 1, glm::vec4(1, 1, 1, 0.1));
+	Plane* right = new Plane(glm::vec2(-1, 0), -85, 1, glm::vec4(1, 1, 1, 0.1));
+	Plane* bottom = new Plane(glm::vec2(0, 1), -40, 1, glm::vec4(1, 1, 1, 0.1));
+	m_physicsScene->addActor(top);
+	m_physicsScene->addActor(left);
+	m_physicsScene->addActor(right);
+	m_physicsScene->addActor(bottom);
+
+
+	Sphere* ball = new Sphere(glm::vec2(0), glm::vec2(80, 80), 1, 2, 1, glm::vec4(1, 1, 1, 1));
+	ball->setDrag(0);
+	ball->collisionCallback = [=](PhysicsObject* other) { 
+		if (other == left || other == right)
+		{
+			ball->setPosition(glm::vec2(0));
+		}
+	};
+	m_physicsScene->addActor(ball);
 }
 
 void Application2D::BubbleBobble()
 {
 	m_gameID = BUBBLEBOBBLE; 
 
+	Box* player = new Box(glm::vec2(0, -40), glm::vec2(0), 1, 5, 1, 0, 1, glm::vec4(0, 1, 0, 1));
+	player->setKinematic(true);
+	m_physicsScene->addActor(player);
+
+	Plane* top = new Plane(glm::vec2(0, -1), -45, 1, glm::vec4(1, 0, 1, 0.5));
+	Plane* left = new Plane(glm::vec2(1, 0), -30, 1, glm::vec4(1, 0, 1, 0.5));
+	Plane* right = new Plane(glm::vec2(-1, 0), -30, 1, glm::vec4(1, 0, 1, 0.5));
+	Plane* bottom = new Plane(glm::vec2(0, 1), -50, 1, glm::vec4(1, 0, 1, 0.5));
+	m_physicsScene->addActor(top);
+	m_physicsScene->addActor(left);
+	m_physicsScene->addActor(right);
+	m_physicsScene->addActor(bottom);
+
+	Sphere* ball = new Sphere(glm::vec2(0, 20), glm::vec2(42, -56), 1, 1.5, 1, glm::vec4(1, 1, 0, 1));
+	ball->setDrag(0);
+	m_physicsScene->addActor(ball);
+	ball->collisionCallback = [=](PhysicsObject* other) {
+		if (other == bottom)
+		{
+			ball->setPosition(glm::vec2(0, 20));
+			if(ball->getVelocity().y > 30.f)
+				ball->setVelocity(glm::vec2(ball->getVelocity().x, -ball->getVelocity().y));
+			else
+				ball->setVelocity(glm::vec2(45, -55));
+		}
+	};
+	for (int i = 0; i < 13; i++)
+	{
+		for (int j = 0; j < 5; j++)
+		{
+			Sphere* orb = new Sphere(glm::vec2(j % 2 == 0 ? -24 + (i * 4) : -22 + (i * 4), 40 - (j * 4)), glm::vec2(0), 1, 2, 1, glm::vec4(0, 1, 1, 1));
+			orb->setKinematic(true);
+			m_physicsScene->addActor(orb);
+			orb->collisionCallback = [=](PhysicsObject* other) {
+				if (other == ball)
+					orb->setPosition(glm::vec2(-200, 0));
+			};
+			if (j % 2 == 1 && i == 12)
+				m_physicsScene->removeActor(orb);
+		}
+	}
 }
 
 void Application2D::FreePlay()
@@ -710,9 +787,9 @@ void Application2D::FreePlay()
 	m_gameID = FREEPLAY;
 	m_physicsScene->setGravity(glm::vec2(0, -70));
 
-	Plane* plane1 = new Plane(glm::vec2(-1, 0), -85, 0.6, glm::vec4(0, 0, 1, 1));
-	Plane* plane2 = new Plane(glm::vec2(1, 0), -85, 0.6, glm::vec4(0, 0, 1, 1));
-	Plane* plane3 = new Plane(glm::vec2(0, 1), -40, 0.6, glm::vec4(0, 0, 1, 1));
+	Plane* plane1 = new Plane(glm::vec2(-1, 0), -85, 0.6, glm::vec4(1, 0, 0, 0.5));
+	Plane* plane2 = new Plane(glm::vec2(1, 0), -85, 0.6, glm::vec4(1, 0, 0, 0.5));
+	Plane* plane3 = new Plane(glm::vec2(0, 1), -40, 0.6, glm::vec4(1, 0, 0, 0.5));
 	m_physicsScene->addActor(plane1);
 	m_physicsScene->addActor(plane2);
 	m_physicsScene->addActor(plane3);

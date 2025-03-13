@@ -98,6 +98,11 @@ void RigidBody::resolveCollision(RigidBody* actor2, glm::vec2 contact, glm::vec2
 
 		applyForceToActor(actor2, force, contact);
 
+		if (collisionCallback != nullptr)
+			collisionCallback(actor2);
+		if (actor2->collisionCallback)
+			actor2->collisionCallback(this);
+
 		//// check velocities after collision
 		//printf("%f %f, %f %f\n", m_velocity.x, m_velocity.y, actor2->m_velocity.x, actor2->m_velocity.y);
 
